@@ -1,0 +1,115 @@
+<div class="sub-tabs">
+  <span style="font-size:11.5px;color:var(--ink3)">Weekly progress report</span>
+</div>
+
+<div class="rep-wrap">
+  <div class="rep-header">
+    <span class="rep-period">{{ view_data.week_label }}</span>
+    <button class="rep-ai-btn" onclick="loadAIInsight()">
+      <span>✦</span> AI Insight
+    </button>
+  </div>
+
+  <!-- Key metrics -->
+  <div class="rep-cards">
+    <div class="rep-card {% if view_data.completed_count > 0 %}good{% endif %}">
+      <div class="rep-card-val">{{ view_data.completed_count }}</div>
+      <div class="rep-card-lbl">Completed</div>
+    </div>
+    <div class="rep-card">
+      <div class="rep-card-val">{{ view_data.active_count }}</div>
+      <div class="rep-card-lbl">Active</div>
+    </div>
+    <div class="rep-card {% if view_data.overdue_count > 0 %}bad{% endif %}">
+      <div class="rep-card-val">{{ view_data.overdue_count }}</div>
+      <div class="rep-card-lbl">Overdue</div>
+    </div>
+    <div class="rep-card {% if view_data.habits|selectattr('streak','gt',0)|list|length > 0 %}warn{% endif %}">
+      <div class="rep-card-val">{{ view_data.habits|selectattr('streak','gt',0)|list|length }}</div>
+      <div class="rep-card-lbl">Habits on streak</div>
+    </div>
+    <div class="rep-card">
+      <div class="rep-card-val">{{ view_data.goals|length }}</div>
+      <div class="rep-card-lbl">Active goals</div>
+    </div>
+  </div>
+
+  <!-- AI insight box -->
+  <div class="rep-section">
+    <div class="rep-section-lbl">AI Analysis</div>
+    <div class="ai-insight-box" id="ai-insight-box">
+      <span class="ai-insight-loading">Click "AI Insight" above to generate your personalized analysis.</span>
+    </div>
+  </div>
+
+  <!-- Category breakdown -->
+  {% if view_data.by_category %}
+  <div class="rep-section">
+    <div class="rep-section-lbl">Completed by category</div>
+    {% set max_ct = view_data.by_category.values()|max %}
+    {% for cat, ct in view_data.by_category.items()|sort(attribute='1', reverse=true) %}
+    <div class="rep-cat-row">
+      <span class="rep-cat-name">{{ cat|capitalize }}</span>
+      <div class="rep-bar-track">
+        <div class="rep-bar-fill" style="width:{{ (ct / max_ct * 100)|int }}%"></div>
+      </div>
+      <span class="rep-cat-ct">{{ ct }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Habit streaks -->
+  {% if view_data.habits %}
+  <div class="rep-section">
+    <div class="rep-section-lbl">Habit streaks</div>
+    {% for h in view_data.habits|sort(attribute='streak', reverse=true) %}
+    <div class="rep-habit-row">
+      <span class="rep-habit-name">{{ h.title }}</span>
+      <span class="rep-habit-streak">
+        {% if h.streak > 0 %}🔥 {{ h.streak }} {{ h.frequency }}{% else %}—{% endif %}
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Active goals -->
+  {% if view_data.goals %}
+  <div class="rep-section">
+    <div class="rep-section-lbl">Long-term goals in progress</div>
+    {% for g in view_data.goals %}
+    {% set done_ct, total_sub = g.subtask_progress() %}
+    <div class="rep-goal-row" onclick="openEdit({{ g.id }})" style="cursor:pointer">
+      <span class="rep-goal-scope">{{ g.scope }}</span>
+      <span class="rep-goal-title">{{ g.title }}</span>
+      {% if total_sub > 0 %}
+      <span style="font-size:11px;color:var(--ink3)">{{ done_ct }}/{{ total_sub }} subtasks</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Completed tasks this week -->
+  {% if view_data.completed %}
+  <div class="rep-section">
+    <div class="rep-section-lbl">Completed this week</div>
+    {% for t in view_data.completed %}
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--b0)">
+      <div class="t-dot {{ t.priority }}" style="width:7px;height:7px;border-radius:50%;flex-shrink:0"></div>
+      <span style="flex:1;font-size:13px;color:var(--ink2);text-decoration:line-through">{{ t.title }}</span>
+      <span style="font-size:11px;color:var(--ink4)">{{ t.category }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if not view_data.completed_count and not view_data.habits %}
+  <div class="empty">
+    <div class="empty-ring">◆</div>
+    <div class="empty-msg">Nothing to report yet.</div>
+    <div class="empty-sub">Complete tasks and track habits to see your weekly progress here.</div>
+  </div>
+  {% endif %}
+</div>

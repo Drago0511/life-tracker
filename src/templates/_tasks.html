@@ -1,0 +1,169 @@
+{% macro task_row(task, idx, show_scope=true) %}
+{% set done_ct, total_sub = task.subtask_progress() %}
+<div class="task-row" style="--d:{{ idx * 22 }}ms" onclick="openEdit({{ task.id }})">
+  <div class="t-dot {{ task.priority }}"></div>
+  <div class="t-body">
+    <div class="t-title{% if task.completed %} done{% endif %}">{{ task.title }}</div>
+    {% if task.description %}<div class="t-desc">{{ task.description }}</div>{% endif %}
+    {% if total_sub > 0 %}
+    <div class="t-sub-prog">
+      <div class="t-sub-bar"><div class="t-sub-fill" style="width:{{ (done_ct/total_sub*100)|int }}%"></div></div>
+      <span class="t-sub-txt">{{ done_ct }}/{{ total_sub }}</span>
+    </div>
+    {% endif %}
+  </div>
+  <div class="t-meta">
+    {% if show_scope and task.scope != 'daily' %}<span class="t-badge t-scope {{ task.scope }}">{{ task.scope }}</span>{% endif %}
+    {% if task.duration_type == 'quick' %}<span class="t-dur" title="Quick task">⚡</span>
+    {% elif task.duration_type == 'medium' %}<span class="t-dur" title="Medium task">◐</span>
+    {% elif task.duration_type == 'project' %}<span class="t-dur" title="Project">⬡</span>{% endif %}
+    <span class="t-cat">{{ task.category }}</span>
+    {% if task.recurring %}<span class="t-recur" title="{{ task.recurring }} repeat">↻</span>{% endif %}
+    {% if task.due_datetime %}
+    <span class="t-due {% if task.due_datetime|is_overdue %}overdue{% endif %}">{{ task.due_datetime|fmt_due }}</span>
+    {% endif %}
+  </div>
+  <div class="t-actions" onclick="event.stopPropagation()">
+    <span class="a-btn complete">
+      <form method="post" action="/complete/{{ task.id }}"><button type="submit" title="Done">✓</button></form>
+    </span>
+    <span class="a-btn del">
+      <form method="post" action="/delete/{{ task.id }}" onsubmit="return confirm('Delete?')"><button type="submit" title="Delete">✕</button></form>
+    </span>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro group_hd(label, count=0) %}
+<div class="group-hd">
+  <span class="group-hd-txt">{{ label }}</span>
+  {% if count %}<span class="group-ct">{{ count }}</span>{% endif %}
+  <div class="group-hd-line"></div>
+</div>
+{% endmacro %}
+
+<!-- Sub-view tabs -->
+<div class="sub-tabs">
+  {% for v, lbl in [('day','Day'),('week','Week'),('month','Month'),('6m','6 Mo'),('year','Year')] %}
+  <a class="sub-tab{% if current_view==v %} active{% endif %}"
+     href="/?tab=tasks&view={{ v }}&category={{ current_category }}{% if show_completed %}&all=1{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}">{{ lbl }}</a>
+  {% endfor %}
+  <div class="sub-tab-spacer"></div>
+  {% if selected_date %}
+  <a class="sub-act" href="/?tab=tasks&view={{ current_view }}&category={{ current_category }}{% if show_completed %}&all=1{% endif %}">✕ Clear date filter</a>
+  {% endif %}
+  {% set n = tasks|selectattr('completed','equalto',false)|list|length %}
+  <span style="font-size:11px;color:var(--ink4);margin-left:10px">{{ n }} task{{ 's' if n != 1 }}</span>
+</div>
+
+<div class="list-wrap">
+  {% if not tasks %}
+  <div class="empty">
+    <div class="empty-ring">◎</div>
+    <div class="empty-msg">Nothing here yet.</div>
+    <div class="empty-sub">Add a task from the sidebar.</div>
+  </div>
+  {% endif %}
+
+  {# Day view #}
+  {% if current_view == 'day' %}
+    {% if view_data.long_term %}
+      {{ group_hd('Projects & Goals', view_data.long_term|length) }}
+      {% for t in view_data.long_term %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+    {% endif %}
+    {% if view_data.overdue %}
+      {{ group_hd('Overdue', view_data.overdue|length) }}
+      {% for t in view_data.overdue %}{{ task_row(t, loop.index0, false) }}{% endfor %}
+    {% endif %}
+    {% if view_data.today %}
+      {{ group_hd('Today' + (' · ' + selected_date if selected_date else ''), view_data.today|length) }}
+      {% for t in view_data.today %}{{ task_row(t, loop.index0, false) }}{% endfor %}
+    {% endif %}
+    {% if not view_data.long_term and not view_data.overdue and not view_data.today and tasks %}
+    <div class="empty">
+      <div class="empty-ring">✓</div>
+      <div class="empty-msg">All clear for today.</div>
+      <div class="empty-sub">Check other views or add more tasks.</div>
+    </div>
+    {% endif %}
+
+  {# Week view #}
+  {% elif current_view == 'week' %}
+    {% if view_data.long_term %}
+      {{ group_hd('Projects & Goals', view_data.long_term|length) }}
+      {% for t in view_data.long_term %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+    {% endif %}
+    {% for date_key, day_list in view_data.days.items() %}
+      {% if day_list %}
+        {{ group_hd(date_key|fmt_weekday, day_list|length) }}
+        {% for t in day_list %}{{ task_row(t, loop.index0, false) }}{% endfor %}
+      {% endif %}
+    {% endfor %}
+    {% if view_data.unscheduled %}
+      {{ group_hd('Unscheduled', view_data.unscheduled|length) }}
+      {% for t in view_data.unscheduled %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+    {% endif %}
+
+  {# Month view #}
+  {% elif current_view == 'month' %}
+    {% if view_data.long_term %}
+      {{ group_hd('Yearly Goals', view_data.long_term|length) }}
+      {% for t in view_data.long_term %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+    {% endif %}
+    {% for wk in [1,2,3,4] %}
+      {% if view_data.weeks[wk] %}
+        {{ group_hd('Week ' ~ wk, view_data.weeks[wk]|length) }}
+        {% for t in view_data.weeks[wk] %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+      {% endif %}
+    {% endfor %}
+    {% if view_data.unscheduled %}
+      {{ group_hd('Unscheduled', view_data.unscheduled|length) }}
+      {% for t in view_data.unscheduled %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+    {% endif %}
+
+  {# 6-month view #}
+  {% elif current_view == '6m' %}
+    {% for mk, ml in view_data.months.items() %}
+      {% if ml %}
+        {{ group_hd(mk|fmt_month_key, ml|length) }}
+        {% for t in ml %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+      {% endif %}
+    {% endfor %}
+    {% if view_data.ungrouped %}
+      {{ group_hd('Other', view_data.ungrouped|length) }}
+      {% for t in view_data.ungrouped %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+    {% endif %}
+
+  {# Year view #}
+  {% elif current_view == 'year' %}
+    {% for qn in [1,2,3,4] %}
+      {% if view_data.quarters[qn] %}
+        {{ group_hd('Q' ~ qn, view_data.quarters[qn]|length) }}
+        {% for t in view_data.quarters[qn] %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+      {% endif %}
+    {% endfor %}
+    {% if view_data.ungrouped %}
+      {{ group_hd('Unscheduled', view_data.ungrouped|length) }}
+      {% for t in view_data.ungrouped %}{{ task_row(t, loop.index0, true) }}{% endfor %}
+    {% endif %}
+  {% endif %}
+
+  {% if show_completed %}
+    {% set done = tasks|selectattr('completed','equalto',true)|list %}
+    {% if done %}
+    <div class="done-head">Completed</div>
+    {% for task in done %}
+    <div class="task-row" style="opacity:.4">
+      <div class="t-dot none"></div>
+      <div class="t-body"><div class="t-title done">{{ task.title }}</div></div>
+      <div class="t-meta"><span class="t-cat">{{ task.category }}</span></div>
+      <div class="t-actions" onclick="event.stopPropagation()">
+        <span class="a-btn del">
+          <form method="post" action="/delete/{{ task.id }}" onsubmit="return confirm('Delete?')"><button type="submit">✕</button></form>
+        </span>
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+  {% endif %}
+</div>

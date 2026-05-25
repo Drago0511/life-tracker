@@ -1,0 +1,37 @@
+<div class="sub-tabs">
+  <span style="font-size:11.5px;color:var(--ink3)">Click a day to filter tasks · Drag tasks in Time Block to reschedule</span>
+  <div class="sub-tab-spacer"></div>
+  {% if selected_date %}
+  <a class="sub-act" href="/?tab=calendar&category={{ current_category }}">✕ Reset</a>
+  {% endif %}
+</div>
+
+<div class="cal-wrap">
+  <div class="cal-controls">
+    <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+    <span id="cal-label" class="cal-label"></span>
+    <button class="cal-nav-btn" onclick="calNext()">›</button>
+    <div class="cal-view-sw" style="margin-left:12px">
+      <button class="cal-vsw-btn active" data-v="month" onclick="setCalView('month')">Month</button>
+      <button class="cal-vsw-btn" data-v="week" onclick="setCalView('week')">Week</button>
+    </div>
+    <div class="sub-tab-spacer"></div>
+    <span style="font-size:11px;color:var(--ink4)">{{ all_tasks|selectattr('completed','equalto',false)|list|length }} active tasks</span>
+  </div>
+
+  {% if selected_date %}
+  <div class="cal-filter-bar">
+    <span class="cal-filter-lbl">Showing tasks for {{ selected_date }}</span>
+    <button class="cal-filter-reset" onclick="location.href='/?tab=calendar&category={{ current_category }}'">Clear filter</button>
+  </div>
+  {% endif %}
+
+  <div id="cal-grid"></div>
+
+  <div style="margin-top:20px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+    <span style="font-size:11px;color:var(--ink4)">Priority:</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--hi);display:inline-block"></span>High</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--md);display:inline-block"></span>Medium</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--lo);display:inline-block"></span>Low</span>
+  </div>
+</div>

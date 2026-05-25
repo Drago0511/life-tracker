@@ -1,0 +1,140 @@
+<div class="sub-tabs">
+  <span style="font-size:11.5px;color:var(--ink3)">Daily and weekly habit tracking with streak counters</span>
+</div>
+
+<div class="hab-wrap">
+  {% if habits %}
+  <div class="hab-grid">
+    {% for habit in habits %}
+    <div class="hab-card {{ habit.color }}">
+      <div class="hab-title-row">
+        <span class="hab-title">{{ habit.title }}</span>
+        <span class="hab-streak {% if habit.current_streak == 0 %}hab-streak-0{% endif %}">
+          {% if habit.current_streak > 0 %}🔥 {{ habit.current_streak }}{% else %}—{% endif %}
+        </span>
+      </div>
+      <div class="hab-freq">{{ habit.frequency|capitalize }} habit</div>
+
+      <div class="hab-dots">
+        {% for filled in habit.last_7_days %}
+        <div class="hab-dot {% if filled %}filled {{ habit.color }}{% endif %}"></div>
+        {% endfor %}
+        <span class="hab-dot-lbl">7 days</span>
+      </div>
+
+      <div class="hab-footer">
+        <span class="hab-cat">{{ habit.category }}</span>
+        <div class="hab-actions">
+          {% if habit.completed_today %}
+          <form method="post" action="/habits/{{ habit.id }}/uncomplete" style="margin:0">
+            <button class="hab-check {{ habit.color }} checked pop" title="Mark incomplete">✓</button>
+          </form>
+          {% else %}
+          <form method="post" action="/habits/{{ habit.id }}/complete" style="margin:0">
+            <button class="hab-check {{ habit.color }}" title="Mark complete today">✓</button>
+          </form>
+          {% endif %}
+          <form method="post" action="/habits/{{ habit.id }}/delete" style="margin:0"
+                onsubmit="return confirm('Delete {{ habit.title }}?')">
+            <button class="hab-del-btn" title="Delete habit">✕</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Add habit card -->
+    <div class="hab-add-card">
+      <div class="hab-add-title">+ New Habit</div>
+      <form method="post" action="/habits/add" style="display:flex;flex-direction:column;gap:9px">
+        <input type="hidden" name="color" id="habit-color-in" value="sage">
+        <div class="f-field">
+          <input class="f-in" name="title" placeholder="Habit name…" required autocomplete="off">
+        </div>
+        <div class="f-row">
+          <div class="f-field">
+            <div class="f-lbl">Frequency</div>
+            <select class="f-sel" name="frequency">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+            </select>
+          </div>
+          <div class="f-field">
+            <div class="f-lbl">Category</div>
+            <select class="f-sel" name="category">
+              {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat|capitalize }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="f-field">
+          <div class="f-lbl">Color</div>
+          <div class="color-sw">
+            {% for c in habit_colors %}
+            <div class="color-opt {{ c }}{% if loop.first %} selected{% endif %}"
+                 onclick="selectColor('{{ c }}')" title="{{ c|capitalize }}"></div>
+            {% endfor %}
+          </div>
+        </div>
+        <button type="submit" class="btn-add">+ Add Habit</button>
+      </form>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- No habits yet — show add card prominently -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
+    <div class="hab-add-card">
+      <div class="hab-add-title">+ New Habit</div>
+      <form method="post" action="/habits/add" style="display:flex;flex-direction:column;gap:9px">
+        <input type="hidden" name="color" id="habit-color-in" value="sage">
+        <div class="f-field">
+          <input class="f-in" name="title" placeholder="e.g. Morning meditation…" required autocomplete="off">
+        </div>
+        <div class="f-row">
+          <div class="f-field">
+            <div class="f-lbl">Frequency</div>
+            <select class="f-sel" name="frequency">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+            </select>
+          </div>
+          <div class="f-field">
+            <div class="f-lbl">Category</div>
+            <select class="f-sel" name="category">
+              {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat|capitalize }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="f-field">
+          <div class="f-lbl">Color</div>
+          <div class="color-sw">
+            {% for c in habit_colors %}
+            <div class="color-opt {{ c }}{% if loop.first %} selected{% endif %}"
+                 onclick="selectColor('{{ c }}')" title="{{ c|capitalize }}"></div>
+            {% endfor %}
+          </div>
+        </div>
+        <button type="submit" class="btn-add">+ Add Habit</button>
+      </form>
+    </div>
+    <div class="empty" style="padding:30px">
+      <div class="empty-ring" style="font-size:22px">◉</div>
+      <div class="empty-msg">Track your habits here.</div>
+      <div class="empty-sub">Habits reset daily or weekly with automatic streak tracking.</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Habit tips -->
+  {% if habits %}
+  <div style="margin-top:8px;padding:14px 16px;background:rgba(130,196,146,.04);border:1px solid rgba(130,196,146,.15);border-radius:10px;font-size:12px;color:var(--ink3)">
+    <strong style="color:var(--ink2)">Streak rules:</strong>
+    Daily habits must be completed each day to maintain streak · Weekly habits need at least one completion per week ·
+    Streaks reset automatically if you miss a day (daily) or week (weekly).
+  </div>
+  {% endif %}
+</div>

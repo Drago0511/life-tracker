@@ -1,0 +1,82 @@
+<div class="tb-wrap">
+  <div class="tb-header">
+    <span style="font-size:13px;font-weight:600;color:var(--ink)">Day Planner</span>
+    <input class="tb-date-in" type="date" id="tb-date"
+           value="{{ selected_date or now.strftime('%Y-%m-%d') }}"
+           onchange="location.href='/?tab=timeblock&date='+this.value">
+    <div style="flex:1"></div>
+    {% if has_ai %}
+    <button class="tb-ai-btn" id="tb-ai-btn" onclick="aiScheduleSuggest()">
+      <span>✦</span> AI Suggest
+    </button>
+    {% else %}
+    <span style="font-size:11px;color:var(--ink4)">Install the claude CLI for AI scheduling</span>
+    {% endif %}
+  </div>
+
+  <div class="tb-body">
+    <div class="tb-slots">
+      {% for hour in range(6, 24) %}
+      {% set slot_tasks = view_data.slots[hour] if view_data.slots else [] %}
+      <div class="tb-slot">
+        <div class="tb-slot-time">{{ hour|fmt_hour }}</div>
+        <div class="tb-slot-zone{% if slot_tasks %} has-task{% endif %}"
+             id="slot-{{ hour }}"
+             ondragover="tbDragOver(event)"
+             ondragleave="tbDragLeave(event)"
+             ondrop="tbDrop(event,{{ hour }})">
+          {% for task in slot_tasks %}
+          <div class="tb-task-block" onclick="openEdit({{ task.id }})"
+               draggable="true"
+               ondragstart="tbDragStart(event,{{ task.id }})"
+               ondragend="tbDragEnd(event)">
+            <div class="tb-dot {{ task.priority }}"></div>
+            <span class="tb-ttl">{{ task.title }}</span>
+            {% if task.estimated_minutes %}
+            <span class="tb-dur">{{ task.estimated_minutes|fmt_minutes }}</span>
+            {% endif %}
+            <span class="t-dur" style="font-size:12px">
+              {% if task.duration_type == 'quick' %}⚡{% elif task.duration_type == 'project' %}⬡{% else %}◐{% endif %}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="tb-unsch">
+      <div class="tb-unsch-hd">Unscheduled <span style="font-size:10px;color:var(--ink4)">(drag to schedule)</span></div>
+      <div class="tb-unsch-list">
+        {% if view_data.unscheduled %}
+          {% for task in view_data.unscheduled %}
+          <div class="tb-unsch-chip"
+               draggable="true"
+               ondragstart="tbDragStart(event,{{ task.id }})"
+               ondragend="tbDragEnd(event)"
+               onclick="openEdit({{ task.id }})">
+            <div class="t-dot {{ task.priority }}" style="width:6px;height:6px;border-radius:50%;flex-shrink:0"></div>
+            <span style="flex:1;font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ task.title }}</span>
+            {% if task.estimated_minutes %}
+            <span style="font-size:10.5px;color:var(--ink3)">{{ task.estimated_minutes|fmt_minutes }}</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="font-size:12px;color:var(--ink4);padding:14px 4px">All tasks scheduled ✓</div>
+        {% endif %}
+      </div>
+
+      <div style="padding:0 10px 12px;border-top:1px solid var(--b0);margin-top:auto;padding-top:12px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink4);margin-bottom:8px">Summary</div>
+        {% set sch_count = range(6,24)|map('string')|list|length %}
+        <div style="font-size:12px;color:var(--ink3)">
+          {{ view_data.unscheduled|length }} unscheduled<br>
+          {% set sched = namespace(n=0) %}
+          {% for h in range(6,24) %}{% if view_data.slots[h] %}{% set sched.n = sched.n + view_data.slots[h]|length %}{% endif %}{% endfor %}
+          {{ sched.n }} in time slots
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
