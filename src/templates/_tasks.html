@@ -60,8 +60,8 @@
   {% if not tasks %}
   <div class="empty">
     <div class="empty-ring">◎</div>
-    <div class="empty-msg">Nothing here yet.</div>
-    <div class="empty-sub">Add a task from the sidebar.</div>
+    <div class="empty-msg">Your day is a blank canvas.</div>
+    <div class="empty-sub">Add a task from the sidebar to begin shaping it.</div>
   </div>
   {% endif %}
 
@@ -82,8 +82,8 @@
     {% if not view_data.long_term and not view_data.overdue and not view_data.today and tasks %}
     <div class="empty">
       <div class="empty-ring">✓</div>
-      <div class="empty-msg">All clear for today.</div>
-      <div class="empty-sub">Check other views or add more tasks.</div>
+      <div class="empty-msg">Today is all yours.</div>
+      <div class="empty-sub">Everything is done. Add more or rest easy.</div>
     </div>
     {% endif %}
 

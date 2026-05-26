@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Life Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -27,8 +30,8 @@
   --glow:rgba(136,144,99,.22);--glow2:rgba(136,144,99,.1);
 
   /* ── Typography ── */
-  --font-serif:'Georgia','Times New Roman',serif;
-  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --font-serif:'Cormorant Garamond','Georgia','Times New Roman',serif;
+  --font:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
 
   /* ── Motion ── */
   --spring:cubic-bezier(.34,1.56,.64,1);
@@ -37,16 +40,28 @@
 }
 
 html,body{height:100%;overflow:hidden;}
-body{font-family:var(--font);font-size:13px;line-height:1.5;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+body{font-family:var(--font);font-size:13px;line-height:1.5;background:transparent;color:var(--ink);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+
+/* Ambient background */
+@keyframes ambient{
+  0%{background:radial-gradient(ellipse at 30% 40%,#354024 0%,#4c3d19 45%,#3a3520 100%);}
+  33%{background:radial-gradient(ellipse at 60% 28%,#4c3d19 0%,#354024 42%,#3a3520 100%);}
+  66%{background:radial-gradient(ellipse at 42% 68%,#3a3520 0%,#354024 38%,#4c3d19 100%);}
+  100%{background:radial-gradient(ellipse at 22% 60%,#354024 0%,#3a3520 42%,#4c3d19 100%);}
+}
+body::before{content:'';position:fixed;inset:0;z-index:-1;
+  background:radial-gradient(ellipse at 30% 40%,#354024 0%,#4c3d19 45%,#3a3520 100%);
+  animation:ambient 12s ease-in-out infinite alternate;}
 
 /* Grain overlay */
 body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.028;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:180px 180px;}
 
-::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px;opacity:.5;}
+::-webkit-scrollbar-thumb{background:#889063;border-radius:4px;transition:opacity .3s;}
+::-webkit-scrollbar-thumb:hover{background:rgba(136,144,99,.9);}
 
 /* ── Topbar ── */
 .topbar{display:flex;align-items:center;gap:10px;height:52px;min-height:52px;padding:0 20px;
@@ -83,7 +98,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 
 /* ── Sidebar (dark zone) ── */
 .sidebar{width:292px;min-width:292px;
-  background:linear-gradient(180deg,var(--s1) 0%,rgba(45,56,28,.98) 100%);
+  background:linear-gradient(180deg,rgba(53,64,36,0.93) 0%,rgba(44,56,32,0.96) 100%);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border-right:1px solid var(--b0);display:flex;flex-direction:column;overflow-y:auto;}
 .sb-block{padding:20px 18px 0;}
 .sb-block:last-child{padding-bottom:24px;}
@@ -186,8 +202,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 
 /* ── Task rows ── */
 .task-row{display:flex;align-items:center;padding:0 22px;min-height:50px;position:relative;
-  cursor:pointer;transition:background .2s var(--ease);
-  animation:fade-up .3s var(--ease) both;animation-delay:var(--d,0ms);}
+  cursor:pointer;transition:background .2s var(--ease),opacity .3s var(--ease),transform .3s var(--ease);
+  animation:fade-up .35s var(--spring) both;animation-delay:var(--d,0ms);}
 .task-row::after{content:'';position:absolute;bottom:0;left:22px;right:22px;height:1px;
   background:linear-gradient(90deg,transparent,rgba(163,162,137,.25) 10%,rgba(163,162,137,.25) 90%,transparent);
   pointer-events:none;}
@@ -333,10 +349,10 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 /* ── Habits tab ── */
 .hab-wrap{flex:1;overflow-y:auto;padding:20px;}
 .hab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:24px;}
-.hab-card{background:var(--main-s1);border:1px solid var(--main-b);border-radius:15px;padding:16px;
-  display:flex;flex-direction:column;gap:12px;
-  transition:border-color .22s,box-shadow .22s,transform .2s var(--ease);position:relative;overflow:hidden;}
-.hab-card:hover{border-color:var(--main-b2);box-shadow:0 7px 22px rgba(0,0,0,.15);transform:translateY(-2px);}
+.hab-card{background:rgba(229,215,196,0.78);border:1px solid rgba(229,215,196,0.38);border-radius:15px;padding:16px;
+  display:flex;flex-direction:column;gap:12px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:border-color .22s,box-shadow .22s,transform .22s var(--spring);position:relative;overflow:hidden;}
+.hab-card:hover{border-color:rgba(136,144,99,.45);box-shadow:0 8px 28px rgba(0,0,0,.18),0 0 0 1px rgba(136,144,99,.18);transform:translateY(-3px);}
 .hab-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:15px 15px 0 0;}
 .hab-card.sage::before{background:var(--sage);}
 .hab-card.terracotta::before{background:var(--hi);}
@@ -442,9 +458,10 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
   opacity:0;pointer-events:none;transition:opacity .25s var(--ease);}
 .modal-back.open{opacity:1;pointer-events:all;}
 .modal-back.open .modal-card{transform:scale(1) translateY(0);}
-.modal-card{background:var(--main-s1);border:1px solid var(--main-b);border-radius:18px;
+.modal-card{background:rgba(213,204,171,0.84);border:1px solid rgba(229,215,196,0.32);border-radius:18px;
   width:520px;max-width:calc(100vw - 40px);max-height:calc(100vh - 60px);overflow-y:auto;
-  padding:26px;box-shadow:0 50px 100px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06);
+  padding:26px;box-shadow:0 50px 100px rgba(20,12,3,.6),0 2px 0 rgba(255,255,255,.07);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   transform:scale(.93) translateY(14px);transition:transform .3s var(--spring);}
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
 .modal-title{font-family:var(--font-serif);font-size:16px;font-weight:700;color:var(--main-ink);}
@@ -500,9 +517,53 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 #habit-modal .modal-card{width:440px;}
 
 /* ── Animations ── */
-@keyframes fade-up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fade-up{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 @keyframes pop{0%{transform:scale(1);}40%{transform:scale(1.3);}70%{transform:scale(.9);}100%{transform:scale(1);}}
 .pop{animation:pop .38s var(--spring);}
+
+/* ── Task completion ── */
+.t-title{background-repeat:no-repeat;background-position:0 50%;background-size:0% 0;}
+.t-title.strike-anim{
+  background-image:linear-gradient(var(--main-ink3),var(--main-ink3));
+  animation:strike-draw 400ms ease forwards;}
+@keyframes strike-draw{0%{background-size:0% 1.5px;}100%{background-size:100% 1.5px;}}
+.task-row.task-exit{opacity:0 !important;transform:translateY(-10px) !important;transition:opacity 320ms var(--ease),transform 320ms var(--ease) !important;}
+
+/* ── Tab transition ── */
+.main.tab-out{opacity:0;transform:translateY(6px);}
+.main.tab-in{animation:tab-fade-in 200ms var(--ease-out) both;}
+@keyframes tab-fade-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── Celebration ── */
+.cel-ripple{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(196,165,96,.6);
+  animation:cel-ring 2s ease-out forwards;}
+@keyframes cel-ring{0%{opacity:.8;transform:scale(.1);}100%{opacity:0;transform:scale(3);}}
+.cel-msg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--font-serif);font-size:13.5px;font-style:italic;color:var(--gold);white-space:nowrap;
+  text-shadow:0 2px 14px rgba(196,165,96,.5);animation:cel-msg-fade 3.5s ease forwards;}
+@keyframes cel-msg-fade{0%{opacity:0;}20%{opacity:1;}75%{opacity:1;}100%{opacity:0;}}
+
+/* ── Empty states ── */
+.empty{padding:80px 40px;}
+.empty-ring{width:52px;height:52px;font-size:22px;}
+.empty-msg{font-family:var(--font-serif);font-size:19px;font-weight:600;letter-spacing:.015em;color:var(--main-ink);}
+.empty-sub{font-size:12px;color:var(--main-ink4);max-width:260px;text-align:center;line-height:1.6;}
+
+/* ── Pin card celebration glow ── */
+@keyframes pin-glow{0%,100%{box-shadow:none;}50%{box-shadow:0 0 0 2px rgba(196,165,96,.3),0 6px 24px rgba(196,165,96,.15);}}
+.sb-block.celebrating{animation:pin-glow 1.5s ease 2;}
+
+/* ── Enhanced hover: buttons scale ── */
+.a-btn:hover{transform:scale(1.04);}
+.btn-add:hover{transform:scale(1.01);}
+.hab-check:hover{transform:scale(1.06);}
+
+/* ── Task row left glow border already handled; enhance shadow ── */
+.task-row:hover{background:rgba(136,144,99,.1);box-shadow:inset 0 0 0 0 transparent;}
+
+/* ── Topbar glassmorphism ── */
+.topbar{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  background:rgba(53,64,36,0.92) !important;}
 
 /* ── Mobile ── */
 .mob-menu-btn{display:none;width:34px;height:34px;border-radius:9px;border:1px solid var(--b1);
@@ -1123,10 +1184,78 @@ function openHabitEdit(btn){
 }
 function closeHabitModal(){habitModal.classList.remove('open');}
 
+// ── Tab transition ────────────────────────────────────────────
+document.querySelectorAll('.tab-lnk').forEach(lnk=>{
+  lnk.addEventListener('click',function(e){
+    if(this.classList.contains('active')) return;
+    e.preventDefault();
+    const href=this.href;
+    const main=document.querySelector('.main');
+    if(main){
+      main.style.transition='opacity 150ms ease,transform 150ms ease';
+      main.style.opacity='0';
+      main.style.transform='translateY(5px)';
+    }
+    setTimeout(()=>{ window.location.href=href; },155);
+  });
+});
+
+// ── Task completion animation ─────────────────────────────────
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.a-btn.complete button[type=submit],.a-btn.complete button');
+  if(!btn) return;
+  const form=btn.closest('form');
+  if(!form||!form.action||!form.action.includes('/complete/')) return;
+  const row=form.closest('.task-row');
+  if(!row||parseFloat(getComputedStyle(row).opacity)<0.6) return; // skip faded completed rows
+  e.preventDefault();
+  // Draw strikethrough
+  const title=row.querySelector('.t-title');
+  if(title) title.classList.add('strike-anim');
+  // After strikethrough + pause, slide out then submit
+  setTimeout(()=>{
+    row.classList.add('task-exit');
+    setTimeout(()=>form.submit(), 340);
+  }, 720);
+});
+
+// ── Top-3 celebration ─────────────────────────────────────────
+function checkPinCelebration(){
+  const pinCount=document.querySelectorAll('.pin-card').length;
+  const prev=parseInt(sessionStorage.getItem('pinCount')||'-1');
+  sessionStorage.setItem('pinCount', pinCount);
+  if(prev>0 && pinCount===0) setTimeout(showPinCelebration, 700);
+}
+function showPinCelebration(){
+  const el=document.createElement('div');
+  el.style.cssText='position:fixed;top:0;left:0;width:292px;height:100vh;pointer-events:none;z-index:60;display:flex;align-items:center;justify-content:center;';
+  el.innerHTML=`<div style="position:relative;width:180px;height:180px;">
+    <div class="cel-ripple"></div>
+    <div class="cel-ripple" style="animation-delay:.35s"></div>
+    <div class="cel-msg">All done.<br>Well done.</div>
+  </div>`;
+  document.body.appendChild(el);
+  const block=document.querySelector('.sb-block');
+  if(block) block.classList.add('celebrating');
+  setTimeout(()=>{ el.remove(); if(block) block.classList.remove('celebrating'); }, 3700);
+}
+
 // ── Init ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
   if(document.getElementById('cal-grid')) renderCalendar();
   updateAddReminders();
+  // Tab fade-in on load
+  const main=document.querySelector('.main');
+  if(main){
+    main.style.opacity='0';
+    main.style.transform='translateY(8px)';
+    requestAnimationFrame(()=>{
+      main.style.transition='opacity 200ms ease,transform 200ms ease';
+      main.style.opacity='1';
+      main.style.transform='translateY(0)';
+    });
+  }
+  checkPinCelebration();
 });
 </script>
 </body>

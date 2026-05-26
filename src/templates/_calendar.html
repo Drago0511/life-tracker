@@ -26,6 +26,13 @@
   </div>
   {% endif %}
 
+  {% if not all_tasks|selectattr('completed','equalto',false)|list %}
+  <div class="empty">
+    <div class="empty-ring">▦</div>
+    <div class="empty-msg">Nothing scheduled — space to breathe.</div>
+    <div class="empty-sub">Add tasks with due dates to see them appear on the calendar.</div>
+  </div>
+  {% endif %}
   <div id="cal-grid"></div>
 
   <div style="margin-top:20px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
