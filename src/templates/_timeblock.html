@@ -1,6 +1,6 @@
 <div class="tb-wrap">
   <div class="tb-header">
-    <span style="font-size:13px;font-weight:600;color:var(--ink)">Day Planner</span>
+    <span style="font-size:13px;font-weight:600;color:var(--main-ink)">Day Planner</span>
     <input class="tb-date-in" type="date" id="tb-date"
            value="{{ selected_date or now.strftime('%Y-%m-%d') }}"
            onchange="location.href='/?tab=timeblock&date='+this.value">
@@ -56,7 +56,7 @@
                ondragend="tbDragEnd(event)"
                onclick="openEdit({{ task.id }})">
             <div class="t-dot {{ task.priority }}" style="width:6px;height:6px;border-radius:50%;flex-shrink:0"></div>
-            <span style="flex:1;font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ task.title }}</span>
+            <span style="flex:1;font-size:12px;color:var(--main-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ task.title }}</span>
             {% if task.estimated_minutes %}
             <span style="font-size:10.5px;color:var(--ink3)">{{ task.estimated_minutes|fmt_minutes }}</span>
             {% endif %}
@@ -68,9 +68,9 @@
       </div>
 
       <div style="padding:0 10px 12px;border-top:1px solid var(--b0);margin-top:auto;padding-top:12px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink4);margin-bottom:8px">Summary</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--main-ink4);margin-bottom:8px">Summary</div>
         {% set sch_count = range(6,24)|map('string')|list|length %}
-        <div style="font-size:12px;color:var(--ink3)">
+        <div style="font-size:12px;color:var(--main-ink3)">
           {{ view_data.unscheduled|length }} unscheduled<br>
           {% set sched = namespace(n=0) %}
           {% for h in range(6,24) %}{% if view_data.slots[h] %}{% set sched.n = sched.n + view_data.slots[h]|length %}{% endif %}{% endfor %}

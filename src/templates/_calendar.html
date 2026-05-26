@@ -1,5 +1,5 @@
 <div class="sub-tabs">
-  <span style="font-size:11.5px;color:var(--ink3)">Click a day to filter tasks · Drag tasks in Time Block to reschedule</span>
+  <span style="font-size:11.5px;color:var(--main-ink3)">Click a day to filter tasks · Drag tasks in Time Block to reschedule</span>
   <div class="sub-tab-spacer"></div>
   {% if selected_date %}
   <a class="sub-act" href="/?tab=calendar&category={{ current_category }}">✕ Reset</a>
@@ -16,7 +16,7 @@
       <button class="cal-vsw-btn" data-v="week" onclick="setCalView('week')">Week</button>
     </div>
     <div class="sub-tab-spacer"></div>
-    <span style="font-size:11px;color:var(--ink4)">{{ all_tasks|selectattr('completed','equalto',false)|list|length }} active tasks</span>
+    <span style="font-size:11px;color:var(--main-ink4)">{{ all_tasks|selectattr('completed','equalto',false)|list|length }} active tasks</span>
   </div>
 
   {% if selected_date %}
@@ -36,9 +36,9 @@
   <div id="cal-grid"></div>
 
   <div style="margin-top:20px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
-    <span style="font-size:11px;color:var(--ink4)">Priority:</span>
-    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--hi);display:inline-block"></span>High</span>
-    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--md);display:inline-block"></span>Medium</span>
-    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--lo);display:inline-block"></span>Low</span>
+    <span style="font-size:11px;color:var(--main-ink4)">Priority:</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--main-ink3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--hi);display:inline-block"></span>High</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--main-ink3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--md);display:inline-block"></span>Medium</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--main-ink3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--lo);display:inline-block"></span>Low</span>
   </div>
 </div>
