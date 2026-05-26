@@ -31,6 +31,9 @@ def complete_habit(habit_id: int) -> Optional[Habit]:
         if habit.id == habit_id:
             if today not in habit.completions:
                 habit.completions.append(today)
+                streak = habit.current_streak
+                if streak > habit.best_streak:
+                    habit.best_streak = streak
                 save_habits(habits)
             return habit
     return None

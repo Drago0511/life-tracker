@@ -34,6 +34,25 @@
     </div>
   </div>
 
+  <!-- 12-week sparkline -->
+  {% if view_data.weekly_history and view_data.weekly_history|max > 0 %}
+  <div class="rep-section">
+    <div class="rep-section-lbl">12-week completion trend</div>
+    {% set max_v = view_data.weekly_history|max %}
+    <div class="rep-sparkline-wrap">
+      {% for v in view_data.weekly_history %}
+      <div class="rep-spark-bar {% if v > 0 %}has-data{% else %}empty{% endif %}"
+           style="height:{{ [((v / max_v) * 48)|int, 3]|max }}px"
+           title="{{ v }} task{{ 's' if v != 1 else '' }} — week {{ loop.index }}"></div>
+      {% endfor %}
+    </div>
+    <div class="rep-sparkline-foot">
+      <span>12 weeks ago</span>
+      <span>This week</span>
+    </div>
+  </div>
+  {% endif %}
+
   <!-- AI insight box -->
   <div class="rep-section">
     <div class="rep-section-lbl">AI Analysis</div>

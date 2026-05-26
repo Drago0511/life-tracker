@@ -7,6 +7,7 @@ Priority = Literal["high", "medium", "low"]
 Scope = Literal["daily", "weekly", "monthly", "yearly"]
 DurationType = Literal["quick", "medium", "project"]
 HabitColor = Literal["sage", "terracotta", "sky", "gold", "violet"]
+HabitFrequency = Literal["daily", "weekly", "flexible"]
 
 PRIORITIES = ("high", "medium", "low")
 RECURRENCES = ("daily", "weekly", "monthly")
@@ -31,6 +32,30 @@ def _streak_daily(comp_set, today) -> int:
     while cur in comp_set:
         streak += 1
         cur -= timedelta(days=1)
+    return streak
+
+
+def _streak_flexible(comp_set, today, target: int = 5) -> int:
+    """Consecutive weeks (Mon–Sun) where the user hit target completions."""
+    def ws(d): return d - timedelta(days=d.weekday())
+
+    def week_hits(week_start):
+        week_end = week_start + timedelta(days=6)
+        return sum(1 for d in comp_set if week_start <= d <= week_end)
+
+    this_week = ws(today)
+    prev_week = this_week - timedelta(weeks=1)
+    if week_hits(this_week) >= target:
+        start_week = this_week
+    elif week_hits(prev_week) >= target:
+        start_week = prev_week
+    else:
+        return 0
+
+    streak, cur = 0, start_week
+    while week_hits(cur) >= target:
+        streak += 1
+        cur -= timedelta(weeks=1)
     return streak
 
 
@@ -132,11 +157,12 @@ class Habit:
     id: int
     title: str
     category: str = "general"
-    frequency: Literal["daily", "weekly"] = "daily"
+    frequency: HabitFrequency = "daily"
     completions: List[str] = field(default_factory=list)  # "YYYY-MM-DD" dates
     color: HabitColor = "sage"
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     archived: bool = False
+    best_streak: int = 0
 
     @property
     def completed_today(self) -> bool:
@@ -150,6 +176,8 @@ class Habit:
         comp_set = {datetime.strptime(d, "%Y-%m-%d").date() for d in self.completions}
         if self.frequency == "daily":
             return _streak_daily(comp_set, today)
+        if self.frequency == "flexible":
+            return _streak_flexible(comp_set, today)
         return _streak_weekly(comp_set, today)
 
     @property
@@ -165,7 +193,8 @@ class Habit:
         return {
             "id": self.id, "title": self.title, "category": self.category,
             "frequency": self.frequency, "completions": self.completions,
-            "color": self.color, "created_at": self.created_at, "archived": self.archived,
+            "color": self.color, "created_at": self.created_at,
+            "archived": self.archived, "best_streak": self.best_streak,
         }
 
     @classmethod
@@ -178,4 +207,5 @@ class Habit:
             color=data.get("color", "sage"),
             created_at=data.get("created_at", datetime.now().isoformat()),
             archived=data.get("archived", False),
+            best_streak=data.get("best_streak", 0),
         )

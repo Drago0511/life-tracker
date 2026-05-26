@@ -1,9 +1,12 @@
 import json
 import os
 import re
+import threading
+import uuid
 from datetime import datetime, timedelta
 
 from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask_wtf.csrf import CSRFProtect, CSRFError
 
 from src.ai_client import has_ai
 from src.habits import (
@@ -28,6 +31,14 @@ from src.views import (
 
 app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), "templates"))
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-key-set-SECRET_KEY-in-production")
+csrf = CSRFProtect(app)
+
+_ai_jobs: dict = {}
+
+@app.errorhandler(CSRFError)
+def csrf_error(e):
+    return redirect(request.referrer or url_for("index"))
 
 _VALID_PRIORITIES = {"high", "medium", "low"}
 _VALID_RECURRENCES = {"daily", "weekly", "monthly"}
@@ -310,6 +321,7 @@ def edit(task_id: int):
 
 
 @app.post("/task/<int:task_id>/reschedule")
+@csrf.exempt
 def reschedule(task_id: int):
     new_dt = request.json.get("due_datetime", "") if request.is_json else ""
     if new_dt and _DATETIME_RE.match(new_dt):
@@ -419,6 +431,33 @@ def ai_report():
     report_data = compute_weekly_report(all_tasks, habits)
     insight_text = weekly_report_insight(report_data)
     return jsonify({"insight": insight_text})
+
+
+@app.post("/ai/weekly-report/start")
+def ai_report_start():
+    all_tasks = list_tasks(show_completed=True)
+    habits = list_habits()
+    report_data = compute_weekly_report(all_tasks, habits)
+    job_id = str(uuid.uuid4())
+    _ai_jobs[job_id] = {"status": "running"}
+
+    def _run():
+        try:
+            insight = weekly_report_insight(report_data)
+            _ai_jobs[job_id] = {"status": "done", "insight": insight}
+        except Exception:
+            _ai_jobs[job_id] = {"status": "error", "insight": "Analysis unavailable."}
+
+    threading.Thread(target=_run, daemon=True).start()
+    return jsonify({"job_id": job_id})
+
+
+@app.get("/ai/weekly-report/poll/<job_id>")
+def ai_report_poll(job_id: str):
+    job = _ai_jobs.get(job_id)
+    if not job:
+        return jsonify({"status": "not_found"}), 404
+    return jsonify(job)
 
 
 def run(host: str = "127.0.0.1", port: int = 8080) -> None:

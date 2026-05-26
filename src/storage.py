@@ -52,9 +52,13 @@ def _init_db() -> None:
                     completions TEXT DEFAULT '[]',
                     color TEXT DEFAULT 'sage',
                     created_at TEXT,
-                    archived BOOLEAN DEFAULT FALSE
+                    archived BOOLEAN DEFAULT FALSE,
+                    best_streak INTEGER DEFAULT 0
                 )
             """)
+            cur.execute(
+                "ALTER TABLE habits ADD COLUMN IF NOT EXISTS best_streak INTEGER DEFAULT 0"
+            )
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS categories (
                     name TEXT PRIMARY KEY
@@ -156,11 +160,12 @@ def _db_save_habits(habits: List[Habit]) -> None:
                 d = h.to_dict()
                 cur.execute(
                     """INSERT INTO habits (id, title, category, frequency, completions,
-                           color, created_at, archived)
-                       VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
+                           color, created_at, archived, best_streak)
+                       VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                     (
                         d["id"], d["title"], d["category"], d["frequency"],
-                        json.dumps(d["completions"]), d["color"], d["created_at"], d["archived"],
+                        json.dumps(d["completions"]), d["color"], d["created_at"],
+                        d["archived"], d.get("best_streak", 0),
                     ),
                 )
         conn.commit()
@@ -209,8 +214,12 @@ def _load_raw() -> dict:
 
 
 def _save_raw(data: dict) -> None:
-    with open(_DATA_FILE, "w") as f:
+    tmp = _DATA_FILE + ".tmp"
+    with open(tmp, "w") as f:
         json.dump(data, f, indent=2)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, _DATA_FILE)
 
 
 # ── Public API ───────────────────────────────────────────────────────────────

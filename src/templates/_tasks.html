@@ -25,10 +25,16 @@
   </div>
   <div class="t-actions" onclick="event.stopPropagation()">
     <span class="a-btn complete">
-      <form method="post" action="/complete/{{ task.id }}"><button type="submit" title="Done">✓</button></form>
+      <form method="post" action="/complete/{{ task.id }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" title="Done">✓</button>
+      </form>
     </span>
     <span class="a-btn del">
-      <form method="post" action="/delete/{{ task.id }}" onsubmit="return confirm('Delete?')"><button type="submit" title="Delete">✕</button></form>
+      <form method="post" action="/delete/{{ task.id }}" onsubmit="return confirm('Delete?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" title="Delete">✕</button>
+      </form>
     </span>
   </div>
 </div>
@@ -159,10 +165,16 @@
       <div class="t-meta"><span class="t-cat">{{ task.category }}</span></div>
       <div class="t-actions" onclick="event.stopPropagation()">
         <span class="a-btn reopen">
-          <form method="post" action="/uncomplete/{{ task.id }}"><button type="submit" title="Reopen">↩</button></form>
+          <form method="post" action="/uncomplete/{{ task.id }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" title="Reopen">↩</button>
+          </form>
         </span>
         <span class="a-btn del">
-          <form method="post" action="/delete/{{ task.id }}" onsubmit="return confirm('Delete?')"><button type="submit">✕</button></form>
+          <form method="post" action="/delete/{{ task.id }}" onsubmit="return confirm('Delete?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">✕</button>
+          </form>
         </span>
       </div>
     </div>

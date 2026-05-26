@@ -202,6 +202,21 @@ def compute_weekly_report(tasks: List[Task], habits: list) -> Dict:
         for h in habits
     ]
 
+    weekly_history = []
+    for i in range(11, -1, -1):
+        ref = now - timedelta(weeks=i)
+        w_start = (ref - timedelta(days=ref.weekday())).date()
+        w_end = w_start + timedelta(days=6)
+        count = 0
+        for t in tasks:
+            if t.completed and t.completed_at:
+                try:
+                    if w_start <= datetime.fromisoformat(t.completed_at).date() <= w_end:
+                        count += 1
+                except ValueError:
+                    pass
+        weekly_history.append(count)
+
     return {
         "week_label": f"{week_start.strftime('%b %d')} – {week_end.strftime('%b %d, %Y')}",
         "completed": completed_week,
@@ -211,4 +226,5 @@ def compute_weekly_report(tasks: List[Task], habits: list) -> Dict:
         "overdue_count": len(overdue),
         "habits": habit_stats,
         "goals": goals,
+        "weekly_history": weekly_history,
     }
