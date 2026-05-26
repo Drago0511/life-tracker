@@ -1,6 +1,12 @@
+databases:
+  - name: life-tracker-db
+    plan: free
+    databaseName: life_tracker
+    user: life_tracker
+
 services:
   - type: web
-    name: to-do-lists
+    name: life-tracker
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
@@ -8,3 +14,7 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: life-tracker-db
+          property: connectionString
