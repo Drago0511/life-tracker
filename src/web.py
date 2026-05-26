@@ -19,7 +19,7 @@ from src.storage import load_tasks
 from src.tasks import (
     add_category, add_task, complete_task, delete_category,
     delete_task, handle_overdue_recurring, list_categories,
-    list_tasks, pinned_tasks, toggle_subtask, update_task,
+    list_tasks, pinned_tasks, toggle_subtask, uncomplete_task, update_task,
 )
 from src.views import (
     compute_weekly_report, day_tasks, month_groups, sixmonth_groups,
@@ -238,6 +238,12 @@ def complete(task_id: int):
     actual = request.form.get("actual_minutes", "").strip()
     actual_minutes = int(actual) if actual.isdigit() else None
     complete_task(task_id, actual_minutes=actual_minutes)
+    return redirect(request.referrer or url_for("index"))
+
+
+@app.post("/uncomplete/<int:task_id>")
+def uncomplete(task_id: int):
+    uncomplete_task(task_id)
     return redirect(request.referrer or url_for("index"))
 
 

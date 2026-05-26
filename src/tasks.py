@@ -1,4 +1,5 @@
-from datetime import datetime
+import calendar as _calendar
+from datetime import datetime, timedelta
 from typing import List, Optional
 
 from src.models import Task
@@ -69,6 +70,17 @@ def toggle_subtask(task_id: int, subtask_idx: int) -> Optional[Task]:
     return None
 
 
+def uncomplete_task(task_id: int) -> Optional[Task]:
+    tasks = load_tasks()
+    for task in tasks:
+        if task.id == task_id:
+            task.completed = False
+            task.completed_at = None
+            save_tasks(tasks)
+            return task
+    return None
+
+
 def delete_task(task_id: int) -> bool:
     tasks = load_tasks()
     filtered = [t for t in tasks if t.id != task_id]
@@ -97,6 +109,24 @@ def pinned_tasks(n: int = 3) -> List[Task]:
     return tasks[:n]
 
 
+def _advance_recurring(due: datetime, recurring: str) -> datetime:
+    """Advance a due datetime by its recurrence period until it is in the future."""
+    now = datetime.now()
+    while due < now:
+        if recurring == "daily":
+            due += timedelta(days=1)
+        elif recurring == "weekly":
+            due += timedelta(weeks=1)
+        elif recurring == "monthly":
+            m = due.month % 12 + 1
+            y = due.year + (due.month // 12)
+            d = min(due.day, _calendar.monthrange(y, m)[1])
+            due = due.replace(year=y, month=m, day=d)
+        else:
+            break
+    return due
+
+
 def handle_overdue_recurring() -> None:
     now = datetime.now()
     tasks = load_tasks()
@@ -105,21 +135,23 @@ def handle_overdue_recurring() -> None:
         if task.completed or not task.due_datetime or not task.recurring:
             continue
         try:
-            if datetime.fromisoformat(task.due_datetime) < now:
-                to_remove.append(task.id)
-                next_due = task.next_due()
-                to_add.append(Task(
-                    id=0,  # assigned below
-                    title=task.title,
-                    category=task.category,
-                    due_datetime=next_due,
-                    priority=task.priority,
-                    recurring=task.recurring,
-                    leading_reminders=task.leading_reminders,
-                    scope=task.scope,
-                    duration_type=task.duration_type,
-                    estimated_minutes=task.estimated_minutes,
-                ))
+            due = datetime.fromisoformat(task.due_datetime)
+            if due >= now:
+                continue
+            to_remove.append(task.id)
+            next_due = _advance_recurring(due, task.recurring)
+            to_add.append(Task(
+                id=0,
+                title=task.title,
+                category=task.category,
+                due_datetime=next_due.strftime("%Y-%m-%dT%H:%M"),
+                priority=task.priority,
+                recurring=task.recurring,
+                leading_reminders=task.leading_reminders,
+                scope=task.scope,
+                duration_type=task.duration_type,
+                estimated_minutes=task.estimated_minutes,
+            ))
         except ValueError:
             pass
     if to_remove:

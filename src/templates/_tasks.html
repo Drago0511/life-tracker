@@ -158,6 +158,9 @@
       <div class="t-body"><div class="t-title done">{{ task.title }}</div></div>
       <div class="t-meta"><span class="t-cat">{{ task.category }}</span></div>
       <div class="t-actions" onclick="event.stopPropagation()">
+        <span class="a-btn reopen">
+          <form method="post" action="/uncomplete/{{ task.id }}"><button type="submit" title="Reopen">↩</button></form>
+        </span>
         <span class="a-btn del">
           <form method="post" action="/delete/{{ task.id }}" onsubmit="return confirm('Delete?')"><button type="submit">✕</button></form>
         </span>

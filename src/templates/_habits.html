@@ -34,6 +34,14 @@
             <button class="hab-check {{ habit.color }}" title="Mark complete today">✓</button>
           </form>
           {% endif %}
+          <button class="hab-edit-btn"
+            data-id="{{ habit.id }}"
+            data-title="{{ habit.title }}"
+            data-freq="{{ habit.frequency }}"
+            data-color="{{ habit.color }}"
+            data-cat="{{ habit.category }}"
+            onclick="openHabitEdit(this)"
+            title="Edit habit">✎</button>
           <form method="post" action="/habits/{{ habit.id }}/delete" style="margin:0"
                 onsubmit="return confirm('Delete {{ habit.title }}?')">
             <button class="hab-del-btn" title="Delete habit">✕</button>
