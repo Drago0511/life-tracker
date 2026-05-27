@@ -6,14 +6,17 @@ from typing import Dict, List, Literal, Optional
 Priority = Literal["high", "medium", "low"]
 Scope = Literal["daily", "weekly", "monthly", "yearly"]
 DurationType = Literal["quick", "medium", "project"]
-HabitColor = Literal["sage", "terracotta", "sky", "gold", "violet"]
+HabitColor = Literal["sage", "terracotta", "sky", "gold", "violet",
+                     "forest", "steel", "amber", "softviolet", "dustyrose",
+                     "sienna", "slate", "teal", "warmcream", "charcoal", "plum"]
 HabitFrequency = Literal["daily", "weekly", "flexible"]
 
 PRIORITIES = ("high", "medium", "low")
 RECURRENCES = ("daily", "weekly", "monthly")
 SCOPES = ("daily", "weekly", "monthly", "yearly")
 DURATION_TYPES = ("quick", "medium", "project")
-HABIT_COLORS = ("sage", "terracotta", "sky", "gold", "violet")
+HABIT_COLORS = ("forest", "terracotta", "steel", "amber", "softviolet",
+                "dustyrose", "sienna", "slate", "teal", "warmcream", "charcoal", "plum")
 
 LEADING_REMINDER_MINUTES: dict = {
     "1w": 10080, "3d": 4320, "1d": 1440,
