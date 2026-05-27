@@ -3,7 +3,8 @@
 <div class="task-row" style="--d:{{ idx * 22 }}ms" onclick="openEdit({{ task.id }})">
   <div class="t-dot {{ task.priority }}"></div>
   <div class="t-body">
-    <div class="t-title{% if task.completed %} done{% endif %}">{{ task.title }}</div>
+    <div class="t-title{% if task.completed %} done{% endif %}"
+         style="font-weight:{% if task.priority == 'high' %}600{% elif task.priority == 'medium' %}500{% else %}400{% endif %}">{{ task.title }}</div>
     {% if task.description %}<div class="t-desc">{{ task.description }}</div>{% endif %}
     {% if total_sub > 0 %}
     <div class="t-sub-prog">
@@ -59,7 +60,7 @@
   <a class="sub-act" href="/?tab=tasks&view={{ current_view }}&category={{ current_category }}{% if show_completed %}&all=1{% endif %}">✕ Clear date filter</a>
   {% endif %}
   {% set n = tasks|selectattr('completed','equalto',false)|list|length %}
-  <span style="font-size:11px;color:var(--main-ink4);margin-left:10px">{{ n }} task{{ 's' if n != 1 }}</span>
+  <span style="font-size:12px;color:var(--main-ink4);margin-left:10px">{{ n }} task{{ 's' if n != 1 }}</span>
 </div>
 
 <div class="list-wrap">
@@ -82,8 +83,13 @@
       {% for t in view_data.overdue %}{{ task_row(t, loop.index0, false) }}{% endfor %}
     {% endif %}
     {% if view_data.today %}
+      {% if view_data.overdue %}<div class="section-divide"></div>{% endif %}
       {{ group_hd('Today' + (' · ' + selected_date if selected_date else ''), view_data.today|length) }}
       {% for t in view_data.today %}{{ task_row(t, loop.index0, false) }}{% endfor %}
+    {% endif %}
+    {% set active_day = (view_data.long_term|length) + (view_data.overdue|length) + (view_data.today|length) %}
+    {% if active_day > 0 and active_day < 3 and not show_completed %}
+    <div class="motivational-line">You are right on track.</div>
     {% endif %}
     {% if not view_data.long_term and not view_data.overdue and not view_data.today and tasks %}
     <div class="empty">
