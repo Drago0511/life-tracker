@@ -10,7 +10,7 @@
       <span>✦</span> AI Suggest
     </button>
     {% else %}
-    <span style="font-size:11px;color:var(--ink4)">Install the claude CLI for AI scheduling</span>
+    <span style="font-size:11px;color:var(--main-ink4)">Install the claude CLI for AI scheduling</span>
     {% endif %}
   </div>
 
@@ -46,7 +46,7 @@
     </div>
 
     <div class="tb-unsch">
-      <div class="tb-unsch-hd">Unscheduled <span style="font-size:10px;color:var(--ink4)">(drag to schedule)</span></div>
+      <div class="tb-unsch-hd">Unscheduled <span style="font-size:10px;color:var(--main-ink4)">(drag to schedule)</span></div>
       <div class="tb-unsch-list">
         {% if view_data.unscheduled %}
           {% for task in view_data.unscheduled %}
@@ -58,16 +58,16 @@
             <div class="t-dot {{ task.priority }}" style="width:6px;height:6px;border-radius:50%;flex-shrink:0"></div>
             <span style="flex:1;font-size:12px;color:var(--main-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ task.title }}</span>
             {% if task.estimated_minutes %}
-            <span style="font-size:10.5px;color:var(--ink3)">{{ task.estimated_minutes|fmt_minutes }}</span>
+            <span style="font-size:10.5px;color:var(--main-ink3)">{{ task.estimated_minutes|fmt_minutes }}</span>
             {% endif %}
           </div>
           {% endfor %}
         {% else %}
-          <div style="font-size:12px;color:var(--ink4);padding:14px 4px">All tasks scheduled ✓</div>
+          <div style="font-size:12px;color:var(--main-ink4);padding:14px 4px">All tasks scheduled ✓</div>
         {% endif %}
       </div>
 
-      <div style="padding:0 10px 12px;border-top:1px solid var(--b0);margin-top:auto;padding-top:12px">
+      <div style="padding:0 10px 12px;border-top:1px solid var(--main-b);margin-top:auto;padding-top:12px">
         <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--main-ink4);margin-bottom:8px">Summary</div>
         {% set sch_count = range(6,24)|map('string')|list|length %}
         <div style="font-size:12px;color:var(--main-ink3)">

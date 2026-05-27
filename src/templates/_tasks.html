@@ -59,7 +59,7 @@
   <a class="sub-act" href="/?tab=tasks&view={{ current_view }}&category={{ current_category }}{% if show_completed %}&all=1{% endif %}">✕ Clear date filter</a>
   {% endif %}
   {% set n = tasks|selectattr('completed','equalto',false)|list|length %}
-  <span style="font-size:11px;color:var(--ink4);margin-left:10px">{{ n }} task{{ 's' if n != 1 }}</span>
+  <span style="font-size:11px;color:var(--main-ink4);margin-left:10px">{{ n }} task{{ 's' if n != 1 }}</span>
 </div>
 
 <div class="list-wrap">
