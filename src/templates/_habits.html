@@ -13,7 +13,7 @@
           {% if habit.current_streak > 0 %}🔥 {{ habit.current_streak }}{% else %}—{% endif %}
         </span>
       </div>
-      <div class="hab-freq" style="display:flex;align-items:center;gap:8px">
+      <div class="hab-freq" style="display:flex;align-items:center;gap:6px">
         <span>{% if habit.frequency == 'flexible' %}5× per week{% else %}{{ habit.frequency|capitalize }} habit{% endif %}</span>
         {% if habit.best_streak > 1 %}
         <span style="font-size:10px;color:var(--main-ink4)">Best: {{ habit.best_streak }}</span>
@@ -62,7 +62,7 @@
     <!-- Add habit card -->
     <div class="hab-add-card">
       <div class="hab-add-title">+ New Habit</div>
-      <form method="post" action="/habits/add" style="display:flex;flex-direction:column;gap:9px">
+      <form method="post" action="/habits/add" style="display:flex;flex-direction:column;gap:8px">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="color" id="habit-color-in" value="sage">
         <div class="f-field">
@@ -101,11 +101,11 @@
   </div>
 
   {% else %}
-  <!-- No habits yet — show add card prominently -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
+  <!-- No habits yet — form card + warm prompt side by side -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;align-content:start">
     <div class="hab-add-card">
       <div class="hab-add-title">+ New Habit</div>
-      <form method="post" action="/habits/add" style="display:flex;flex-direction:column;gap:9px">
+      <form method="post" action="/habits/add" style="display:flex;flex-direction:column;gap:8px">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="color" id="habit-color-in" value="sage">
         <div class="f-field">
@@ -141,20 +141,19 @@
         <button type="submit" class="btn-add">+ Add Habit</button>
       </form>
     </div>
-    <div class="empty">
+    <div class="empty" style="padding:32px 20px">
       <div class="empty-ring">◉</div>
       <div class="empty-msg">Build something that lasts.</div>
-      <div class="empty-sub">Small actions, done daily, shape who you become.</div>
+      <div class="empty-sub">Small actions, repeated daily, shape who you become.</div>
     </div>
   </div>
   {% endif %}
 
   <!-- Habit tips -->
   {% if habits %}
-  <div style="margin-top:8px;padding:14px 16px;background:rgba(136,144,99,.06);border:1px solid rgba(136,144,99,.2);border-radius:10px;font-size:12px;color:var(--main-ink3)">
+  <div style="padding:12px 14px;background:rgba(136,144,99,.06);border:1px solid rgba(136,144,99,.18);border-radius:10px;font-size:11.5px;color:var(--main-ink3);line-height:1.6">
     <strong style="color:var(--main-ink2)">Streak rules:</strong>
-    Daily habits must be completed each day to maintain streak · Weekly habits need at least one completion per week ·
-    Streaks reset automatically if you miss a day (daily) or week (weekly).
+    Daily habits must be completed each day · Weekly habits need one completion per week · 5× habits need five completions per Mon–Sun week.
   </div>
   {% endif %}
 </div>
