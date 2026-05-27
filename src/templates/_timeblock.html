@@ -16,6 +16,15 @@
 
   <div class="tb-body">
     <div class="tb-slots">
+      {% set total_sched = namespace(n=0) %}
+      {% for h in range(6,24) %}{% if view_data.slots[h] %}{% set total_sched.n = total_sched.n + view_data.slots[h]|length %}{% endif %}{% endfor %}
+      {% if total_sched.n == 0 and not view_data.unscheduled %}
+      <div class="empty" style="padding:60px 24px">
+        <div class="empty-ring">◷</div>
+        <div class="empty-msg">Your time, unwritten.</div>
+        <div class="empty-sub">Drag tasks from the sidebar to schedule your day.</div>
+      </div>
+      {% endif %}
       {% for hour in range(6, 24) %}
       {% set slot_tasks = view_data.slots[hour] if view_data.slots else [] %}
       <div class="tb-slot">
@@ -69,7 +78,6 @@
 
       <div style="padding:0 10px 12px;border-top:1px solid var(--main-b);margin-top:auto;padding-top:12px">
         <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--main-ink4);margin-bottom:8px">Summary</div>
-        {% set sch_count = range(6,24)|map('string')|list|length %}
         <div style="font-size:12px;color:var(--main-ink3)">
           {{ view_data.unscheduled|length }} unscheduled<br>
           {% set sched = namespace(n=0) %}

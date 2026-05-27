@@ -1,6 +1,6 @@
 {% macro task_row(task, idx, show_scope=true) %}
 {% set done_ct, total_sub = task.subtask_progress() %}
-<div class="task-row" style="--d:{{ idx * 22 }}ms" onclick="openEdit({{ task.id }})">
+<div class="task-row" style="--d:{{ idx * 60 }}ms" onclick="openEdit({{ task.id }})">
   <div class="t-dot {{ task.priority }}"></div>
   <div class="t-body">
     <div class="t-title{% if task.completed %} done{% endif %}"
@@ -67,7 +67,7 @@
   {% if not tasks %}
   <div class="empty">
     <div class="empty-ring">◎</div>
-    <div class="empty-msg">Your day is a blank canvas.</div>
+    <div class="empty-msg">A clear path forward.</div>
     <div class="empty-sub">Add a task from the sidebar to begin shaping it.</div>
   </div>
   {% endif %}
