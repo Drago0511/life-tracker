@@ -4,7 +4,7 @@
   <div class="t-dot {{ task.priority }}"></div>
   <div class="t-body">
     <div class="t-title{% if task.completed %} done{% endif %}"
-         style="font-weight:{% if task.priority == 'high' %}600{% elif task.priority == 'medium' %}500{% else %}400{% endif %}">{{ task.title }}</div>
+         style="font-weight:{% if task.priority == 'critical' %}700{% elif task.priority == 'important' %}600{% elif task.priority == 'high' %}500{% elif task.priority == 'medium' %}400{% else %}300{% endif %}">{{ task.title }}</div>
     {% if task.description %}<div class="t-desc">{{ task.description }}</div>{% endif %}
     {% if total_sub > 0 %}
     <div class="t-sub-prog">
@@ -21,7 +21,7 @@
     <span class="t-cat">{{ task.category }}</span>
     {% if task.recurring %}<span class="t-recur" title="{{ task.recurring }} repeat">↻</span>{% endif %}
     {% if task.due_datetime %}
-    <span class="t-due {% if task.due_datetime|is_overdue %}overdue{% endif %}">{{ task.due_datetime|fmt_due }}</span>
+    <span class="t-due {% if task.due_datetime|is_overdue %}overdue{% endif %}" data-iso="{{ task.due_datetime }}">{{ task.due_datetime|fmt_due }}</span>
     {% endif %}
   </div>
   <div class="t-actions" onclick="event.stopPropagation()">

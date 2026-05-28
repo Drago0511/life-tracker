@@ -104,8 +104,8 @@ def list_tasks(
 
 def pinned_tasks(n: int = 3) -> List[Task]:
     tasks = [t for t in load_tasks() if not t.completed]
-    priority_rank = {"high": 0, "medium": 1, "low": 2}
-    tasks.sort(key=lambda t: (priority_rank.get(t.priority, 1), _due_sort_key(t)))
+    priority_rank = {"critical": 0, "important": 1, "high": 2, "medium": 3, "low": 4}
+    tasks.sort(key=lambda t: (priority_rank.get(t.priority, 3), _due_sort_key(t)))
     return tasks[:n]
 
 

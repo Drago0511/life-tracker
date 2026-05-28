@@ -40,7 +40,7 @@ _ai_jobs: dict = {}
 def csrf_error(e):
     return redirect(request.referrer or url_for("index"))
 
-_VALID_PRIORITIES = {"high", "medium", "low"}
+_VALID_PRIORITIES = {"critical", "important", "high", "medium", "low"}
 _VALID_RECURRENCES = {"daily", "weekly", "monthly"}
 _VALID_SCOPES = set(SCOPES)
 _VALID_DURATIONS = set(DURATION_TYPES)
@@ -63,11 +63,13 @@ def fmt_due(dt_str: str) -> str:
     try:
         dt = datetime.fromisoformat(dt_str)
         today = datetime.now().date()
+        h = dt.hour % 12 or 12
+        time_str = f"{h}:{dt.strftime('%M')} {'AM' if dt.hour < 12 else 'PM'}"
         if dt.date() == today:
-            return f"Today · {dt.strftime('%H:%M')}"
+            return f"Today · {time_str}"
         if dt.date() == today + timedelta(days=1):
-            return f"Tomorrow · {dt.strftime('%H:%M')}"
-        return dt.strftime("%b %d · %H:%M")
+            return f"Tomorrow · {time_str}"
+        return dt.strftime("%b %d") + f" · {time_str}"
     except ValueError:
         return dt_str
 

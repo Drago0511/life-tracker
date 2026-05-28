@@ -28,7 +28,7 @@
       {% for hour in range(6, 24) %}
       {% set slot_tasks = view_data.slots[hour] if view_data.slots else [] %}
       <div class="tb-slot">
-        <div class="tb-slot-time">{{ hour|fmt_hour }}</div>
+        <div class="tb-slot-time" data-hour="{{ hour }}">{{ hour|fmt_hour }}</div>
         <div class="tb-slot-zone{% if slot_tasks %} has-task{% endif %}"
              id="slot-{{ hour }}"
              ondragover="tbDragOver(event)"

@@ -6,7 +6,7 @@ from src.tasks import add_task, complete_task, delete_task, list_tasks
 from src.web import run as run_web
 
 
-_PRIORITY_LABEL = {"high": "[!]", "medium": "[-]", "low": "[.]"}
+_PRIORITY_LABEL = {"critical": "[!!]", "important": "[!]", "high": "[^]", "medium": "[-]", "low": "[.]"}
 
 
 def _print_tasks(tasks) -> None:
@@ -26,7 +26,7 @@ def main() -> None:
 
     add_p = sub.add_parser("add", help="Add a task")
     add_p.add_argument("title", help="Task title")
-    add_p.add_argument("--priority", choices=["high", "medium", "low"], default="medium")
+    add_p.add_argument("--priority", choices=["critical", "important", "high", "medium", "low"], default="medium")
     add_p.add_argument("--category", default="general")
     add_p.add_argument("--due", metavar="YYYY-MM-DDTHH:MM", help="Due datetime")
 

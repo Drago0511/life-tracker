@@ -20,14 +20,17 @@
   --main-ink:#1A1C18;--main-ink2:#3D5C3A;--main-ink3:#6B7A5E;--main-ink4:#8A8878;
   --main-b:#C8C4B4;--main-b2:#A3A882;
 
-  /* ── Priority ── */
-  --hi:#C4704A;--md:#8B7D3A;--lo:#5A8FA3;
-  --hi-bg:rgba(196,112,74,.12);--md-bg:rgba(139,125,58,.12);--sage-bg:rgba(107,140,90,.12);
-  --lo-bg:rgba(90,143,163,.12);--gold-bg:rgba(139,125,58,.12);--vio-bg:rgba(90,143,163,.12);
+  /* ── Priority (5 levels) ── */
+  --critical:#C0392B;--important:#C26A3A;--hi:#C4806A;--md:#C49A2A;--lo:#6B8FA3;
+  --critical-bg:rgba(192,57,43,.12);--important-bg:rgba(194,106,58,.12);
+  --hi-bg:rgba(196,128,106,.12);--md-bg:rgba(196,154,42,.12);--lo-bg:rgba(107,143,163,.12);
+  --sage-bg:rgba(107,140,90,.12);
 
   /* ── Accents ── */
   --cream:#E8E0D0;--gold:#8B7D3A;--violet:#5A8FA3;--sage:#6B8C5A;
+  --terracotta:#C4704A;
   --glow:rgba(107,140,90,.22);--glow2:rgba(107,140,90,.1);
+  --gold-bg:rgba(139,125,58,.12);--vio-bg:rgba(90,143,163,.12);
 
   /* ── Typography ── */
   --font-serif:'Cormorant Garamond','Georgia','Times New Roman',serif;
@@ -93,6 +96,46 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
   text-decoration:none;display:flex;align-items:center;white-space:nowrap;transition:all .2s var(--ease);}
 .done-btn:hover{color:var(--ink);border-color:var(--b2);}
 
+/* ── Time format toggle ── */
+.time-fmt-toggle{display:flex;align-items:center;height:28px;border-radius:8px;
+  border:1px solid var(--b1);background:var(--b0);cursor:pointer;padding:3px;gap:1px;
+  transition:border-color .2s;user-select:none;}
+.time-fmt-toggle:hover{border-color:var(--b2);}
+.tfmt-opt{font-size:11px;font-weight:500;color:var(--ink4);padding:0 7px;border-radius:6px;
+  height:100%;display:flex;align-items:center;transition:all .2s var(--ease);}
+.tfmt-opt.active{background:var(--s3);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.tfmt-sep{font-size:11px;color:var(--b2);padding:0 1px;}
+
+/* ── Priority picker ── */
+.pri-picker{display:flex;gap:4px;flex-wrap:wrap;}
+.pri-opt{cursor:pointer;}
+.pri-opt input[type=radio]{position:absolute;opacity:0;pointer-events:none;width:0;height:0;}
+.pri-badge{display:flex;align-items:center;gap:4px;padding:5px 8px;border-radius:8px;
+  font-size:11px;font-weight:500;border:1.5px solid var(--b1);cursor:pointer;
+  background:var(--s3);color:var(--ink4);white-space:nowrap;transition:all .16s var(--ease);}
+.pri-badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.pri-badge.critical::before{background:var(--critical);}
+.pri-badge.important::before{background:var(--important);}
+.pri-badge.high::before{background:var(--hi);}
+.pri-badge.medium::before{background:var(--md);}
+.pri-badge.low::before{background:var(--lo);}
+.pri-badge:hover{color:var(--ink2);border-color:var(--b2);}
+.pri-opt input:checked + .pri-badge{color:var(--ink);}
+.pri-opt input:checked + .pri-badge.critical{background:var(--critical-bg);border-color:var(--critical);}
+.pri-opt input:checked + .pri-badge.important{background:var(--important-bg);border-color:var(--important);}
+.pri-opt input:checked + .pri-badge.high{background:var(--hi-bg);border-color:var(--hi);}
+.pri-opt input:checked + .pri-badge.medium{background:var(--md-bg);border-color:var(--md);}
+.pri-opt input:checked + .pri-badge.low{background:var(--lo-bg);border-color:var(--lo);}
+/* Light zone (modal) */
+.modal-card .pri-badge{background:var(--main-bg);border-color:var(--main-b);color:var(--main-ink4);}
+.modal-card .pri-badge:hover{color:var(--main-ink2);border-color:var(--main-b2);}
+.modal-card .pri-opt input:checked + .pri-badge{color:var(--main-ink);}
+.modal-card .pri-opt input:checked + .pri-badge.critical{background:var(--critical-bg);border-color:var(--critical);}
+.modal-card .pri-opt input:checked + .pri-badge.important{background:var(--important-bg);border-color:var(--important);}
+.modal-card .pri-opt input:checked + .pri-badge.high{background:var(--hi-bg);border-color:var(--hi);}
+.modal-card .pri-opt input:checked + .pri-badge.medium{background:var(--md-bg);border-color:var(--md);}
+.modal-card .pri-opt input:checked + .pri-badge.low{background:var(--lo-bg);border-color:var(--lo);}
+
 /* ── Layout ── */
 .layout{display:flex;flex:1;overflow:hidden;}
 
@@ -114,12 +157,14 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .pin-card:last-child{margin-bottom:0;}
 .pin-card:hover{background:var(--s3);border-color:var(--b2);box-shadow:0 5px 18px rgba(0,0,0,.4);transform:translateY(-1px);}
 .p-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.p-dot.high{background:var(--hi);box-shadow:0 0 7px rgba(196,112,74,.5);}
-.p-dot.medium{background:var(--md);box-shadow:0 0 7px rgba(139,125,58,.5);}
-.p-dot.low{background:var(--lo);box-shadow:0 0 7px rgba(90,143,163,.5);}
+.p-dot.critical{background:var(--critical);box-shadow:0 0 7px rgba(192,57,43,.55);}
+.p-dot.important{background:var(--important);box-shadow:0 0 7px rgba(194,106,58,.5);}
+.p-dot.high{background:var(--hi);box-shadow:0 0 7px rgba(196,128,106,.5);}
+.p-dot.medium{background:var(--md);box-shadow:0 0 7px rgba(196,154,42,.5);}
+.p-dot.low{background:var(--lo);box-shadow:0 0 7px rgba(107,143,163,.5);}
 .p-title{flex:1;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .p-due{font-size:13px;color:var(--ink3);flex-shrink:0;}
-.p-due.overdue{color:var(--hi);}
+.p-due.overdue{color:var(--critical);}
 .no-pins{font-size:14px;color:var(--ink4);}
 
 /* ── Insights panel ── */
@@ -164,7 +209,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .cat-entry:last-of-type{border-bottom:none;}
 .cat-name{font-size:13px;color:var(--ink2);}
 .cat-del{background:none;border:none;color:var(--ink4);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;transition:color .15s,background .15s;}
-.cat-del:hover{color:var(--hi);background:var(--hi-bg);}
+.cat-del:hover{color:var(--critical);background:var(--critical-bg);}
 .cat-add-row{display:flex;gap:8px;margin-top:8px;}
 .cat-add-row .f-in{flex:1;}
 .cat-plus{width:32px;flex-shrink:0;background:var(--s3);border:1px solid var(--b1);border-radius:9px;
@@ -214,13 +259,17 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .task-row:hover::before{opacity:.8;transform:scaleY(1);}
 .task-row:hover .t-actions{opacity:1;}
 .t-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-right:12px;transition:box-shadow .22s;}
+.t-dot.critical{background:var(--critical);}
+.t-dot.important{background:var(--important);}
 .t-dot.high{background:var(--hi);}
 .t-dot.medium{background:var(--md);}
 .t-dot.low{background:var(--lo);}
 .t-dot.none{background:var(--main-b2);opacity:.5;}
-.task-row:hover .t-dot.high{box-shadow:0 0 9px rgba(196,112,74,.55);}
-.task-row:hover .t-dot.medium{box-shadow:0 0 9px rgba(139,125,58,.55);}
-.task-row:hover .t-dot.low{box-shadow:0 0 9px rgba(90,143,163,.55);}
+.task-row:hover .t-dot.critical{box-shadow:0 0 9px rgba(192,57,43,.65);}
+.task-row:hover .t-dot.important{box-shadow:0 0 9px rgba(194,106,58,.6);}
+.task-row:hover .t-dot.high{box-shadow:0 0 9px rgba(196,128,106,.55);}
+.task-row:hover .t-dot.medium{box-shadow:0 0 9px rgba(196,154,42,.55);}
+.task-row:hover .t-dot.low{box-shadow:0 0 9px rgba(107,143,163,.55);}
 .t-body{flex:1;min-width:0;}
 .t-title{font-size:14px;color:var(--main-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em;}
 .t-title.done{color:var(--main-ink3);text-decoration:line-through;}
@@ -239,7 +288,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
   color:var(--main-ink3);}
 .t-recur{font-size:12px;color:var(--main-ink4);}
 .t-due{font-size:11px;color:var(--main-ink3);white-space:nowrap;}
-.t-due.overdue{color:var(--hi);}
+.t-due.overdue{color:var(--critical);}
 .t-actions{display:flex;gap:4px;margin-left:8px;opacity:0;transition:opacity .2s;}
 .a-btn{width:27px;height:27px;border-radius:8px;border:1px solid var(--main-b);
   background:var(--main-s1);color:var(--main-ink3);font-size:12px;
@@ -248,7 +297,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .a-btn:hover{color:var(--main-ink);border-color:var(--main-b2);background:var(--main-s2);}
 .a-btn:active{transform:scale(.82);}
 .a-btn.complete:hover{color:var(--md);border-color:rgba(107,140,90,.5);background:var(--md-bg);}
-.a-btn.del:hover{color:var(--hi);border-color:rgba(196,112,74,.4);background:var(--hi-bg);}
+.a-btn.del:hover{color:var(--critical);border-color:rgba(192,57,43,.4);background:var(--critical-bg);}
 .a-btn.reopen:hover{color:var(--gold);border-color:rgba(139,125,58,.4);background:var(--gold-bg);}
 .a-btn form{display:contents;}
 .a-btn button{all:unset;width:100%;height:100%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
@@ -287,12 +336,16 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .cal-cell.today .cal-day-num{color:var(--sage);font-weight:600;}
 .cal-task-dots{display:flex;flex-wrap:wrap;gap:3px;}
 .cal-dot{width:6px;height:6px;border-radius:50%;}
+.cal-dot.critical{background:var(--critical);}
+.cal-dot.important{background:var(--important);}
 .cal-dot.high{background:var(--hi);}
 .cal-dot.medium{background:var(--md);}
 .cal-dot.low{background:var(--lo);}
 .cal-task-chip{font-size:10px;color:var(--main-ink2);background:var(--main-s2);border-radius:4px;
   padding:1px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
   margin-top:2px;border-left:2px solid var(--md);}
+.cal-task-chip.critical{border-left-color:var(--critical);}
+.cal-task-chip.important{border-left-color:var(--important);}
 .cal-task-chip.high{border-left-color:var(--hi);}
 .cal-task-chip.low{border-left-color:var(--lo);}
 .cal-filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:10px 14px;
@@ -331,6 +384,11 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
   cursor:pointer;transition:all .16s;}
 .tb-task-block:hover{background:var(--main-s2);border-color:var(--main-b2);}
 .tb-task-block .tb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tb-dot.critical{background:var(--critical);}
+.tb-dot.important{background:var(--important);}
+.tb-dot.high{background:var(--hi);}
+.tb-dot.medium{background:var(--md);}
+.tb-dot.low{background:var(--lo);}
 .tb-task-block .tb-ttl{flex:1;font-size:12.5px;color:var(--main-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tb-task-block .tb-dur{font-size:10.5px;color:var(--main-ink3);}
 .tb-unsch{width:220px;border-left:1px solid var(--main-b);display:flex;flex-direction:column;
@@ -357,7 +415,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .hab-card::before{content:'';position:absolute;top:0;left:0;right:0;height:8px;border-radius:14px 14px 0 0;}
 /* Color top bars — old system colors use CSS vars; new palette hardcoded */
 .hab-card.sage::before{background:var(--sage);}
-.hab-card.terracotta::before{background:var(--hi);}
+.hab-card.terracotta::before{background:var(--terracotta);}
 .hab-card.sky::before{background:var(--lo);}
 .hab-card.gold::before{background:var(--gold);}
 .hab-card.violet::before{background:#8B7AAE;}
@@ -400,7 +458,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 /* Streak glow when done — old system colors use vars; new palette hardcoded */
 .hab-streak-glow.sage{color:var(--sage);text-shadow:0 0 18px var(--glow);}
 .hab-streak-glow.forest{color:#3D5C3A;text-shadow:0 0 18px rgba(61,92,58,.4);}
-.hab-streak-glow.terracotta{color:var(--hi);text-shadow:0 0 18px rgba(196,112,74,.4);}
+.hab-streak-glow.terracotta{color:var(--terracotta);text-shadow:0 0 18px rgba(196,112,74,.4);}
 .hab-streak-glow.sienna{color:#A0522D;text-shadow:0 0 18px rgba(160,82,45,.4);}
 .hab-streak-glow.sky{color:var(--lo);text-shadow:0 0 18px rgba(90,143,163,.4);}
 .hab-streak-glow.steel{color:#5A8FA3;text-shadow:0 0 18px rgba(90,143,163,.4);}
@@ -419,7 +477,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .hab-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--main-b);transition:all .22s var(--spring);}
 .hab-dot-day{font-family:var(--font);font-size:9px;color:var(--main-ink4);}
 .hab-dot.filled.sage{background:var(--sage);border-color:var(--sage);box-shadow:0 0 6px var(--glow);}
-.hab-dot.filled.terracotta{background:var(--hi);border-color:var(--hi);box-shadow:0 0 6px rgba(196,112,74,.55);}
+.hab-dot.filled.terracotta{background:var(--terracotta);border-color:var(--terracotta);box-shadow:0 0 6px rgba(196,112,74,.55);}
 .hab-dot.filled.sky{background:var(--lo);border-color:var(--lo);box-shadow:0 0 6px rgba(90,143,163,.55);}
 .hab-dot.filled.gold{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(139,125,58,.55);}
 .hab-dot.filled.violet{background:#8B7AAE;border-color:#8B7AAE;box-shadow:0 0 6px rgba(139,122,174,.55);}
@@ -441,10 +499,10 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
   display:flex;align-items:center;gap:4px;transition:all .18s,transform .12s var(--spring);white-space:nowrap;}
 .hab-action-btn:hover{color:var(--main-ink);border-color:var(--main-b2);background:var(--main-s2);}
 .hab-action-btn:active{transform:scale(.95);}
-.hab-del-btn:hover{color:var(--hi);background:var(--hi-bg);border-color:rgba(196,112,74,.4);}
+.hab-del-btn:hover{color:var(--critical);background:var(--critical-bg);border-color:rgba(192,57,43,.4);}
 /* Check button checked states */
 .hab-check.sage.checked,.hab-check.forest.checked{background:var(--sage-bg);border-color:var(--sage);color:var(--main-ink2);}
-.hab-check.terracotta.checked,.hab-check.sienna.checked{background:var(--hi-bg);border-color:var(--hi);color:var(--hi);}
+.hab-check.terracotta.checked,.hab-check.sienna.checked{background:rgba(196,112,74,.12);border-color:var(--terracotta);color:var(--terracotta);}
 .hab-check.sky.checked,.hab-check.steel.checked{background:var(--lo-bg);border-color:var(--lo);color:var(--lo);}
 .hab-check.gold.checked,.hab-check.amber.checked{background:var(--gold-bg);border-color:#B89040;color:#B89040;}
 .hab-check.violet.checked,.hab-check.softviolet.checked{background:rgba(139,122,174,.15);border-color:#8B7AAE;color:#8B7AAE;}
@@ -460,7 +518,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .color-opt:hover{transform:scale(1.2);}
 .color-opt.selected{transform:scale(1.15);box-shadow:0 0 0 2px var(--main-bg),0 0 0 4px currentColor;}
 .color-opt.sage{background:var(--sage);color:var(--sage);}
-.color-opt.terracotta{background:var(--hi);color:var(--hi);}
+.color-opt.terracotta{background:var(--terracotta);color:var(--terracotta);}
 .color-opt.sky{background:var(--lo);color:var(--lo);}
 .color-opt.gold{background:var(--gold);color:var(--gold);}
 .color-opt.violet{background:#8B7AAE;color:#8B7AAE;}
@@ -519,7 +577,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .rep-card-lbl{font-size:11px;color:var(--main-ink3);margin-top:5px;}
 .rep-card.good .rep-card-val{color:var(--sage);}
 .rep-card.warn .rep-card-val{color:var(--gold);}
-.rep-card.bad .rep-card-val{color:var(--hi);}
+.rep-card.bad .rep-card-val{color:var(--critical);}
 .rep-section{margin-bottom:20px;}
 .rep-section-lbl{font-family:var(--font-serif);font-size:11px;font-weight:700;letter-spacing:.20em;
   text-transform:uppercase;color:var(--main-ink3);margin-bottom:12px;}
@@ -595,7 +653,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .subtask-lbl{flex:1;font-size:12px;color:var(--main-ink2);}
 .subtask-lbl.done{text-decoration:line-through;color:var(--main-ink4);}
 .subtask-rm{background:none;border:none;color:var(--main-ink4);cursor:pointer;font-size:11px;padding:2px 4px;border-radius:4px;transition:color .12s;}
-.subtask-rm:hover{color:var(--hi);}
+.subtask-rm:hover{color:var(--critical);}
 .subtask-add-row{display:flex;gap:5px;margin-top:5px;}
 .subtask-add-row .f-in{flex:1;}
 .subtask-add-btn{padding:0 12px;height:33px;border-radius:8px;border:1px solid var(--main-b);
@@ -744,6 +802,11 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
     {% endfor %}
   </nav>
   <div class="spacer"></div>
+  <div class="time-fmt-toggle" id="time-fmt-toggle" onclick="toggleTimeFormat()" title="Toggle 12h/24h time format">
+    <span class="tfmt-opt active" data-f="12">12h</span>
+    <span class="tfmt-sep">/</span>
+    <span class="tfmt-opt" data-f="24">24h</span>
+  </div>
   {% if tab in ('tasks','calendar','timeblock') %}
   <div class="top-pill">
     <span class="top-pill-lbl">Category</span>
@@ -771,7 +834,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
           <div class="p-dot {{ t.priority }}"></div>
           <span class="p-title">{{ t.title }}</span>
           {% if t.due_datetime %}
-          <span class="p-due {% if t.due_datetime|is_overdue %}overdue{% endif %}">{{ t.due_datetime|fmt_due }}</span>
+          <span class="p-due {% if t.due_datetime|is_overdue %}overdue{% endif %}" data-iso="{{ t.due_datetime }}">{{ t.due_datetime|fmt_due }}</span>
           {% endif %}
         </div>
         {% endfor %}
@@ -783,7 +846,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
     <div class="sb-block">
       <div class="sb-lbl">Patterns</div>
       {% if insights.preferred_hour is not none %}
-      <div class="ins-row"><span class="ins-k">Peak hour</span><span class="ins-v">{{ '%02d:00'|format(insights.preferred_hour) }}</span></div>
+      <div class="ins-row"><span class="ins-k">Peak hour</span><span class="ins-v" data-hour="{{ insights.preferred_hour }}">{{ '%02d:00'|format(insights.preferred_hour) }}</span></div>
       {% endif %}
       <div class="ins-row"><span class="ins-k">Completed</span><span class="ins-v">{{ insights.total_completed }}</span></div>
       {% if insights.avg_accuracy != 1.0 %}
@@ -802,21 +865,21 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
         <div class="f-field">
           <input class="f-in" name="title" placeholder="What needs doing?" autocomplete="off" required>
         </div>
-        <div class="f-row">
-          <div class="f-field">
-            <div class="f-lbl">Category</div>
-            <select class="f-sel" name="category" id="cat-sel" onchange="toggleNewCat(this)">
-              {% for cat in categories %}<option value="{{ cat }}">{{ cat|capitalize }}</option>{% endfor %}
-              <option value="__new__">+ New…</option>
-            </select>
-          </div>
-          <div class="f-field">
-            <div class="f-lbl">Priority</div>
-            <select class="f-sel" name="priority">
-              <option value="high">High</option>
-              <option value="medium" selected>Medium</option>
-              <option value="low">Low</option>
-            </select>
+        <div class="f-field">
+          <div class="f-lbl">Category</div>
+          <select class="f-sel" name="category" id="cat-sel" onchange="toggleNewCat(this)">
+            {% for cat in categories %}<option value="{{ cat }}">{{ cat|capitalize }}</option>{% endfor %}
+            <option value="__new__">+ New…</option>
+          </select>
+        </div>
+        <div class="f-field">
+          <div class="f-lbl">Priority</div>
+          <div class="pri-picker">
+            <label class="pri-opt"><input type="radio" name="priority" value="critical"> <span class="pri-badge critical">Critical</span></label>
+            <label class="pri-opt"><input type="radio" name="priority" value="important"> <span class="pri-badge important">Important</span></label>
+            <label class="pri-opt"><input type="radio" name="priority" value="high"> <span class="pri-badge high">High</span></label>
+            <label class="pri-opt"><input type="radio" name="priority" value="medium" checked> <span class="pri-badge medium">Medium</span></label>
+            <label class="pri-opt"><input type="radio" name="priority" value="low"> <span class="pri-badge low">Low</span></label>
           </div>
         </div>
         <div class="f-field new-cat-wrap" id="new-cat-wrap">
@@ -951,16 +1014,18 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
             <option value="quick">⚡ Quick</option><option value="medium">◐ Medium</option><option value="project">⬡ Project</option>
           </select></div>
       </div>
-      <div class="f-row">
-        <div class="f-field"><div class="f-lbl">Category</div>
-          <select class="f-sel" id="e-cat" name="category">
-            {% for cat in categories %}<option value="{{ cat }}">{{ cat|capitalize }}</option>{% endfor %}
-          </select></div>
-        <div class="f-field"><div class="f-lbl">Priority</div>
-          <select class="f-sel" id="e-pri" name="priority">
-            <option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>
-          </select></div>
-      </div>
+      <div class="f-field"><div class="f-lbl">Category</div>
+        <select class="f-sel" id="e-cat" name="category">
+          {% for cat in categories %}<option value="{{ cat }}">{{ cat|capitalize }}</option>{% endfor %}
+        </select></div>
+      <div class="f-field"><div class="f-lbl">Priority</div>
+        <div class="pri-picker" id="e-pri-picker">
+          <label class="pri-opt"><input class="e-pri-radio" type="radio" name="priority" value="critical"> <span class="pri-badge critical">Critical</span></label>
+          <label class="pri-opt"><input class="e-pri-radio" type="radio" name="priority" value="important"> <span class="pri-badge important">Important</span></label>
+          <label class="pri-opt"><input class="e-pri-radio" type="radio" name="priority" value="high"> <span class="pri-badge high">High</span></label>
+          <label class="pri-opt"><input class="e-pri-radio" type="radio" name="priority" value="medium" checked> <span class="pri-badge medium">Medium</span></label>
+          <label class="pri-opt"><input class="e-pri-radio" type="radio" name="priority" value="low"> <span class="pri-badge low">Low</span></label>
+        </div></div>
       <div class="f-row">
         <div class="f-field"><div class="f-lbl">Due date & time</div>
           <input class="f-in" id="e-due" type="datetime-local" name="due_datetime"></div>
@@ -1063,7 +1128,8 @@ function openEdit(id) {
     document.getElementById('e-title').value = t.title||'';
     document.getElementById('e-desc').value  = t.description||'';
     document.getElementById('e-cat').value   = t.category||'general';
-    document.getElementById('e-pri').value   = t.priority||'medium';
+    const epri = t.priority || 'medium';
+    document.querySelectorAll('.e-pri-radio').forEach(r => r.checked = r.value === epri);
     document.getElementById('e-due').value   = t.due_datetime||'';
     document.getElementById('e-rec').value   = t.recurring||'';
     document.getElementById('e-scope').value = t.scope||'daily';
@@ -1438,10 +1504,57 @@ document.querySelectorAll('.btn-add').forEach(btn=>{
   btn.addEventListener('mouseleave',()=>{btn.style.transform='';});
 });
 
+// ── Time format (12h / 24h) ───────────────────────────────────
+function _fmtTime(isoStr, use12h) {
+  const d = new Date(isoStr);
+  if(isNaN(d)) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+  const ds = isoStr.slice(0,10);
+  let timePart;
+  if(use12h) {
+    const h = d.getHours() % 12 || 12;
+    const m = String(d.getMinutes()).padStart(2,'0');
+    timePart = `${h}:${m} ${d.getHours() < 12 ? 'AM' : 'PM'}`;
+  } else {
+    timePart = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }
+  const todayDs = today.toISOString().slice(0,10);
+  const tomorrowDs = tomorrow.toISOString().slice(0,10);
+  if(ds === todayDs) return `Today · ${timePart}`;
+  if(ds === tomorrowDs) return `Tomorrow · ${timePart}`;
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' + timePart;
+}
+function _fmtHour(h, use12h) {
+  if(!use12h) return `${String(h).padStart(2,'0')}:00`;
+  if(h===0) return '12 AM';
+  if(h<12) return `${h} AM`;
+  if(h===12) return '12 PM';
+  return `${h-12} PM`;
+}
+function applyTimeFormat() {
+  const use12h = (localStorage.getItem('timeFormat') || '12') !== '24';
+  document.querySelectorAll('[data-iso]').forEach(el => {
+    const t = el.dataset.iso; if(t) el.textContent = _fmtTime(t, use12h);
+  });
+  document.querySelectorAll('[data-hour]').forEach(el => {
+    const h = parseInt(el.dataset.hour); if(!isNaN(h)) el.textContent = _fmtHour(h, use12h);
+  });
+  document.querySelectorAll('#time-fmt-toggle .tfmt-opt').forEach(opt => {
+    opt.classList.toggle('active', opt.dataset.f === (use12h ? '12' : '24'));
+  });
+}
+function toggleTimeFormat() {
+  const cur = localStorage.getItem('timeFormat') || '12';
+  localStorage.setItem('timeFormat', cur === '12' ? '24' : '12');
+  applyTimeFormat();
+}
+
 // ── Init ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
   if(document.getElementById('cal-grid')) renderCalendar();
   updateAddReminders();
+  applyTimeFormat();
   // Tab fade-in on load
   const main=document.querySelector('.main');
   if(main){
