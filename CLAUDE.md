@@ -97,33 +97,42 @@ Full `:root` variables as of the last theme pass:
   --main-b:    #C8C4B4;   /* warm light stone — dividers/borders */
   --main-b2:   #A3A882;   /* dry sage — hover borders */
 
-  /* ── Priority ── */
-  --hi:     #C4704A;   /* terracotta — high priority */
-  --md:     #8B7D3A;   /* amber moss — medium priority */
-  --lo:     #5A8FA3;   /* steel blue — low priority */
-  --hi-bg:  rgba(196,112,74,.12);
-  --md-bg:  rgba(139,125,58,.12);
-  --sage-bg:rgba(107,140,90,.12);
-  --lo-bg:  rgba(90,143,163,.12);
-  --gold-bg:rgba(139,125,58,.12);
-  --vio-bg: rgba(90,143,163,.12);
+  /* ── Priority (5 levels) ── */
+  --critical:  #C0392B;   /* blood orange — critical */
+  --important: #C26A3A;   /* warm sienna — important */
+  --hi:        #C4806A;   /* muted coral — high */
+  --md:        #C49A2A;   /* harvest — medium */
+  --lo:        #6B8FA3;   /* dusty blue — low */
+  --critical-bg: rgba(192,57,43,.12);
+  --important-bg:rgba(194,106,58,.12);
+  --hi-bg:     rgba(196,128,106,.12);
+  --md-bg:     rgba(196,154,42,.12);
+  --lo-bg:     rgba(107,143,163,.12);
+  --sage-bg:   rgba(107,140,90,.12);
 
   /* ── Accents ── */
-  --cream:  #E8E0D0;   /* parchment */
-  --gold:   #8B7D3A;   /* amber moss */
-  --violet: #5A8FA3;   /* steel blue */
-  --sage:   #6B8C5A;   /* mid moss */
-  --glow:   rgba(107,140,90,.22);
-  --glow2:  rgba(107,140,90,.1);
+  --cream:     #E8E0D0;   /* parchment */
+  --gold:      #8B7D3A;   /* amber moss — UI accent (reopen, goal badges) */
+  --violet:    #5A8FA3;   /* steel blue — AI feature accent */
+  --sage:      #6B8C5A;   /* mid moss */
+  --terracotta:#C4704A;   /* habit terracotta backward compat */
+  --glow:      rgba(107,140,90,.22);
+  --glow2:     rgba(107,140,90,.1);
+  --gold-bg:   rgba(139,125,58,.12);
+  --vio-bg:    rgba(90,143,163,.12);
 }
 ```
 
 ### Hardcoded rgba → variable mapping
 When you see hardcoded rgba values in CSS they follow these patterns:
 - Sage/moss: `rgba(107,140,90,…)` — maps to `--sage` / `--glow`
-- Medium priority: `rgba(139,125,58,…)` — maps to `--md`
-- Low priority (steel blue): `rgba(90,143,163,…)` — maps to `--lo`
-- High priority: `rgba(196,112,74,…)` — maps to `--hi` (unchanged from original)
+- Critical: `rgba(192,57,43,…)` — maps to `--critical`
+- Important: `rgba(194,106,58,…)` — maps to `--important`
+- High (muted coral): `rgba(196,128,106,…)` — maps to `--hi`
+- Medium (harvest): `rgba(196,154,42,…)` — maps to `--md`
+- Low (dusty blue): `rgba(107,143,163,…)` — maps to `--lo`
+- Terracotta (habit accent): `rgba(196,112,74,…)` — maps to `--terracotta`
+- Gold accent: `rgba(139,125,58,…)` — maps to `--gold` / `--gold-bg`
 
 ### Key surface rgba values
 - Sidebar bg gradient: `rgba(30,32,24,0.95)` → `rgba(34,37,32,0.97)` (s1 → s2)
@@ -148,7 +157,7 @@ Font sans:   'DM Sans' (weights 300/400/500, opsz 9..40)
 **Type scale (CSS):**
 - `.sb-lbl` headers: 13px, 700, letter-spacing .15em, uppercase, serif
 - `.p-title` pinned tasks: 15px
-- `.t-title` task rows: 14px (font-weight varies by priority: high=600, medium=500, low=400)
+- `.t-title` task rows: 14px (font-weight by priority: critical=700, important=600, high=500, medium=400, low=300)
 - `.group-hd-txt`: 11px, 700, letter-spacing .20em, uppercase, serif
 - `.empty-msg`: 17px, 600, serif
 - `.empty-sub`: 12px
@@ -198,22 +207,26 @@ All easing curves:
 - Five time-horizon views: **Day**, **Week**, **Month**, **6 Mo**, **Year**
 - Day view groups: Projects & Goals (long-term/yearly scope) → Overdue → Today
 - Week view: days + unscheduled; Month view: weeks 1–4; 6Mo: by month; Year: by quarter
-- Priority-weighted font (high=600, medium=500, low=400) for visual hierarchy
+- **Five priority levels**: Critical (#C0392B) → Important (#C26A3A) → High (#C4806A) → Medium (#C49A2A) → Low (#6B8FA3)
+- Priority-weighted font (critical=700, important=600, high=500, medium=400, low=300) for visual hierarchy
 - Section divider between Overdue and Today (`.section-divide`)
 - Motivational line ("You are right on track.") when 1–2 active tasks in day view
 - Show/hide completed toggle
 - Date filter (click calendar day → filters task list to that date)
 - Category filter via topbar pill
 - Task rows animate in with 60ms stagger
+- **12h/24h time toggle** in topbar — persists to localStorage, reformats all displayed times client-side without page reload
 
 ### Add Task (Sidebar)
 - Required: title, category, priority
+- Priority selected via **radio pill widget** showing all 5 levels with their color dots simultaneously
 - Progressive disclosure (`⊕ Add details`): scope, duration type, due date+time, estimated minutes, repeat
 - Leading reminders (shown only when due date is set): 1w / 3d / 1d / 3h / 1h / 30m / 15m / 5m
 - "+ New…" option in category dropdown to add inline
 - Magnetic add button
 
 ### Edit Modal
+- Priority also uses radio pill widget (same 5-level picker, light-zone styled)
 - Full task edit: all fields + subtasks
 - Subtask list with inline add/remove and checkbox completion
 - AI subtask suggestion (`✦ Suggest`) — calls Claude CLI (disabled for quick tasks)
@@ -225,9 +238,10 @@ All easing curves:
 - Week view: 7-column layout with task chips
 - Navigation: prev/next month or week
 - Click any cell → filters task list to that date
+- Priority legend shows all 5 levels with their colors
 
 ### Time Block Tab
-- Hour slots 6am–midnight
+- Hour slots 6am–midnight (labels have `data-hour` attr for time format JS)
 - Drag-and-drop: unscheduled chips → time slots (updates `due_datetime`)
 - AI Schedule Suggest (`✦ AI Suggest`) — overlays reasoning tips on slots
 - Summary panel: counts scheduled vs unscheduled
@@ -288,7 +302,7 @@ All easing curves:
 ### Task
 ```python
 id, title, completed, category, due_datetime (ISO str),
-priority ("high"|"medium"|"low"), recurring (None|"daily"|"weekly"|"monthly"),
+priority ("critical"|"important"|"high"|"medium"|"low"), recurring (None|"daily"|"weekly"|"monthly"),
 leading_reminders: List[str], description, created_at, scope ("daily"|"weekly"|"monthly"|"yearly"),
 duration_type ("quick"|"medium"|"project"), estimated_minutes, actual_minutes,
 completed_at, start_date, subtasks: List[{title:str, done:bool}]
@@ -349,12 +363,12 @@ JSON/XHR posts include `'X-CSRFToken': CSRF_TOKEN` header (JS constant set at to
 
 | Filter | Purpose |
 |---|---|
-| `fmt_due` | ISO datetime → human label ("Today 3pm", "Thu", overdue format) |
+| `fmt_due` | ISO datetime → 12h human label ("Today · 3:30 PM", "May 27 · 9:00 AM"); JS overrides via `data-iso` attr |
 | `is_overdue` | ISO datetime → bool (past now) |
 | `fmt_minutes` | int minutes → "1h 30m" style |
 | `fmt_weekday` | "YYYY-MM-DD" → "Mon 27" |
 | `fmt_month_key` | "YYYY-MM" → "May 2026" |
-| `fmt_hour` | int hour → "9 AM" / "2 PM" |
+| `fmt_hour` | int hour → "9 AM" / "2 PM" (12h); JS overrides via `data-hour` attr |
 
 ---
 
@@ -370,6 +384,9 @@ JSON/XHR posts include `'X-CSRFToken': CSRF_TOKEN` header (JS constant set at to
 - **No backwards-compat shims** — if something is removed, remove it completely
 - **Spacing scale**: 4/8/12/16/20/24/32/48px — no arbitrary values
 - **CSS variables**: never use dark-zone variables (`--ink*`, `--s*`) inside `.main` (light zone), and vice versa
+- **Time format**: server renders 12h by default (`fmt_due`, `fmt_hour`); add `data-iso` (ISO datetime) or `data-hour` (int hour) to any new time element so `applyTimeFormat()` can reformat it on toggle
+- **Priority**: always use all 5 levels (critical/important/high/medium/low); `--hi` is muted coral #C4806A — do NOT confuse with `--terracotta` #C4704A which is a habit accent
+- **Danger/delete states**: use `--critical` / `--critical-bg` (not `--hi`) for delete hovers, overdue text, and error cards
 - **All tests must pass** after changes: `python3 -m pytest tests/`
 - **Smoke test**: `python3 -c "from src.web import app; c=app.test_client(); [print(t,c.get(f'/?tab={t}').status_code) for t in ['tasks','calendar','timeblock','habits','report']]"`
 
