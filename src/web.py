@@ -14,7 +14,7 @@ from src.habits import (
     uncomplete_habit, update_habit,
 )
 from src.learning import (
-    get_insights, predict_duration, schedule_suggest,
+    get_insights, schedule_suggest,
     suggest_subtasks, weekly_report_insight,
 )
 from src.models import LEADING_REMINDER_LABELS, SCOPES, DURATION_TYPES, HABIT_COLORS
@@ -365,9 +365,7 @@ def habit_add():
 
 @app.post("/habits/<int:habit_id>/complete")
 def habit_complete(habit_id: int):
-    h = complete_habit(habit_id)
-    if not h:
-        return redirect(request.referrer or url_for("index", tab="habits"))
+    complete_habit(habit_id)
     return redirect(request.referrer or url_for("index", tab="habits"))
 
 
@@ -395,24 +393,11 @@ def habit_edit(habit_id: int):
     return redirect(url_for("index", tab="habits"))
 
 
-@app.get("/insights")
-def insights_json():
-    return jsonify(get_insights())
-
-
 @app.get("/suggest-subtasks")
 def suggest():
     title = request.args.get("title", "")
     duration_type = request.args.get("duration_type", "medium")
     return jsonify(suggest_subtasks(title, duration_type))
-
-
-@app.get("/predict-duration")
-def predict():
-    title = request.args.get("title", "")
-    category = request.args.get("category", "general")
-    duration_type = request.args.get("duration_type", "quick")
-    return jsonify({"minutes": predict_duration(title, category, duration_type)})
 
 
 @app.get("/ai/schedule-suggest")
@@ -424,21 +409,15 @@ def ai_schedule():
     return jsonify({"suggestions": suggestions, "tasks": [t.to_dict() for t in unscheduled]})
 
 
-@app.get("/ai/weekly-report")
-def ai_report():
-    all_tasks = list_tasks(show_completed=True)
-    habits = list_habits()
-    report_data = compute_weekly_report(all_tasks, habits)
-    insight_text = weekly_report_insight(report_data)
-    return jsonify({"insight": insight_text})
-
-
 @app.post("/ai/weekly-report/start")
 def ai_report_start():
     all_tasks = list_tasks(show_completed=True)
     habits = list_habits()
     report_data = compute_weekly_report(all_tasks, habits)
     job_id = str(uuid.uuid4())
+    if len(_ai_jobs) > 50:
+        for k in list(_ai_jobs.keys())[:25]:
+            del _ai_jobs[k]
     _ai_jobs[job_id] = {"status": "running"}
 
     def _run():

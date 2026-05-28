@@ -178,7 +178,3 @@ def weekly_report_insight(report_data: Dict) -> str:
         max_tokens=180,
     )
     return ai_text or _fallback_weekly_insight(report_data)
-
-
-def preferred_hour() -> Optional[int]:
-    return get_insights().get("preferred_hour")

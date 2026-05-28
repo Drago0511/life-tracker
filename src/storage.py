@@ -271,8 +271,7 @@ def save_habits(habits: List[Habit]) -> None:
         _db_save_habits(habits)
         return
     raw = _load_raw()
-    all_raw = _load_raw().get("habits", [])
-    archived = [h for h in all_raw if h.get("archived")]
+    archived = [h for h in raw.get("habits", []) if h.get("archived")]
     raw["habits"] = [h.to_dict() for h in habits] + archived
     _save_raw(raw)
 

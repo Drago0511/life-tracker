@@ -234,15 +234,20 @@ All easing curves:
 - Empty state: "Your time, unwritten."
 
 ### Habits Tab
+- Page header: "Your Rituals" in Cormorant Garamond
 - Grid of cards (`auto-fit`, min 220px — collapses empty tracks, no desert effect)
-- Per-card: color accent bar, title + streak (🔥 N), frequency label, best streak, 7-day dot grid, category badge
+- Card structure: 8px color accent bar → title → body (left/right split) → footer buttons
+  - Left half: streak number as centerpiece (48px Cormorant Garamond), "days" label, "Best: N" in dry sage, frequency + category pills
+  - Right half: 7-day dot tracker (12px circles in `repeat(4,1fr)` grid — 2 rows of 4+3), day labels (Mon–Sun) in 9px DM Sans
+  - Completion state: 15% warm tint of habit color, inner border ring, streak number glows with per-color shadow
 - Completion toggle (✓ button) — animated pop on check, uncomplete on re-press
 - Streak rules: daily=each day; weekly=one per Mon–Sun; flexible=5× per Mon–Sun week
 - Three frequencies: Daily, Weekly, 5× per week (flexible)
-- Five accent colors: sage, terracotta, sky, gold, violet
-- Add habit inline (in grid) — color swatch picker
+- 12 accent colors: forest, terracotta, steel, amber, softviolet, dustyrose, sienna, slate, teal, warmcream, charcoal, plum (displayed as 6×2 grid of 24px circles in picker)
+- Old color values (sage, sky, gold, violet) remain valid in stored data; new picker shows 12-color palette
+- Add habit: expandable section below cards (dashed border trigger "+ Add a new habit" in Cormorant Garamond)
 - Edit habit modal
-- Sidebar stat panel: done today count, longest active streak
+- Sidebar stat panel: total habits count, done today fraction (e.g. 1/3), longest active streak with 🔥, best overall streak
 - Empty state: "Every forest begins with one seed."
 
 ### Weekly Report Tab
@@ -292,7 +297,10 @@ completed_at, start_date, subtasks: List[{title:str, done:bool}]
 ### Habit
 ```python
 id, title, category, frequency ("daily"|"weekly"|"flexible"),
-completions: List["YYYY-MM-DD"], color ("sage"|"terracotta"|"sky"|"gold"|"violet"),
+completions: List["YYYY-MM-DD"],
+color ("sage"|"terracotta"|"sky"|"gold"|"violet"|
+       "forest"|"steel"|"amber"|"softviolet"|"dustyrose"|
+       "sienna"|"slate"|"teal"|"warmcream"|"charcoal"|"plum"),
 created_at, archived, best_streak
 # Computed properties: completed_today, current_streak, last_7_days
 ```
@@ -322,10 +330,10 @@ POST /habits/<id>/edit        — update habit
 POST /habits/<id>/delete      — delete habit
 POST /categories/add          — add category
 POST /categories/delete/<cat> — delete category
-GET  /suggest-subtasks        — AI subtask suggestions (query: title, duration_type)
-POST /ai/weekly-report/start  — start async AI report generation
+GET  /suggest-subtasks               — AI subtask suggestions (query: title, duration_type)
+POST /ai/weekly-report/start         — start async AI report generation (returns job_id)
 GET  /ai/weekly-report/poll/<job_id> — poll report job status
-GET  /ai/schedule-suggest     — AI time-block suggestions
+GET  /ai/schedule-suggest            — AI time-block suggestions
 ```
 
 ---

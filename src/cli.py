@@ -1,19 +1,9 @@
 import argparse
-import re
 import sys
 
 from src.daemon import run as run_daemon
 from src.tasks import add_task, complete_task, delete_task, list_tasks
 from src.web import run as run_web
-
-
-def _validate_time(value: str) -> str:
-    if not re.match(r"^\d{2}:\d{2}$", value):
-        raise argparse.ArgumentTypeError("Time must be in HH:MM format (e.g. 09:30)")
-    h, m = int(value[:2]), int(value[3:])
-    if not (0 <= h <= 23 and 0 <= m <= 59):
-        raise argparse.ArgumentTypeError("Invalid time value")
-    return value
 
 
 _PRIORITY_LABEL = {"high": "[!]", "medium": "[-]", "low": "[.]"}
@@ -26,18 +16,19 @@ def _print_tasks(tasks) -> None:
     for t in tasks:
         status = "[x]" if t.completed else "[ ]"
         priority = _PRIORITY_LABEL.get(t.priority, "[-]")
-        reminder = f"  (remind {t.reminder_time})" if t.reminder_time else ""
-        print(f"  {status} {priority} #{t.id} {t.title}{reminder}")
+        due = f"  (due {t.due_datetime})" if t.due_datetime else ""
+        print(f"  {status} {priority} #{t.id} {t.title}{due}")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(prog="todo", description="To-do list with reminders")
+    parser = argparse.ArgumentParser(prog="todo", description="Life Tracker CLI")
     sub = parser.add_subparsers(dest="command", required=True)
 
     add_p = sub.add_parser("add", help="Add a task")
     add_p.add_argument("title", help="Task title")
-    add_p.add_argument("--remind", metavar="HH:MM", type=_validate_time, help="Reminder time")
-    add_p.add_argument("--priority", choices=["high", "medium", "low"], default="medium", help="Priority level")
+    add_p.add_argument("--priority", choices=["high", "medium", "low"], default="medium")
+    add_p.add_argument("--category", default="general")
+    add_p.add_argument("--due", metavar="YYYY-MM-DDTHH:MM", help="Due datetime")
 
     complete_p = sub.add_parser("complete", help="Mark a task complete")
     complete_p.add_argument("id", type=int, help="Task ID")
@@ -51,14 +42,14 @@ def main() -> None:
     sub.add_parser("daemon", help="Start the reminder daemon")
 
     web_p = sub.add_parser("web", help="Start the web dashboard")
-    web_p.add_argument("--port", type=int, default=8080, help="Port to listen on")
+    web_p.add_argument("--port", type=int, default=8080)
 
     args = parser.parse_args()
 
     if args.command == "add":
-        task = add_task(args.title, args.remind, args.priority)
-        reminder_note = f" (reminder at {task.reminder_time})" if task.reminder_time else ""
-        print(f"Added #{task.id}: [{task.priority}] {task.title}{reminder_note}")
+        task = add_task(args.title, category=args.category, priority=args.priority,
+                        due_datetime=args.due)
+        print(f"Added #{task.id}: [{task.priority}] {task.title}")
 
     elif args.command == "complete":
         task = complete_task(args.id)
